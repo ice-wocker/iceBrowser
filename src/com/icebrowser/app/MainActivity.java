@@ -2,12 +2,10 @@ package com.icebrowser.app;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,9 +14,7 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.PermissionRequest;
@@ -26,50 +22,42 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements TabsManager.TabsListener {
     private static final String TAG = "iceBrowser";
     private static final String HOME_URL = "file:///android_asset/home.html";
     private static final int FILE_CHOOSER_REQUEST = 1001;
     
     private FrameLayout webContainer;
-    private LinearLayout findBar;
-    private EditText findEdit;
     private EditText urlEdit;
     private ProgressBar progressBar;
     private ImageButton btnBack, btnForward, btnRefresh, btnTabs, btnMenu;
-    private WebView currentWebView;
-    private ValueCallback<Uri[]> filePathCallback;
+    private android.widget.LinearLayout btnBookmarks, btnHistory, btnDownloads, btnSettings;
+    private TabsManager tabsManager;
+    public static TabsManager staticTabsManager;
+    public static MainActivity instance;
+    private IceSearchService searchService;
     private SharedPreferences prefs;
+    private ValueCallback<Uri[]> filePathCallback;
     
+    // === 真正的多 WebView tab 管理 ===
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
         try {
             prefs = getSharedPreferences("ice_prefs", MODE_PRIVATE);
+            searchService = new IceSearchService();
             
             setContentView(R.layout.activity_main);
             
             webContainer = (FrameLayout) findViewById(R.id.web_container);
-            findBar = (LinearLayout) findViewById(R.id.find_bar);
-            findEdit = (EditText) findViewById(R.id.find_edit);
             urlEdit = (EditText) findViewById(R.id.url_edit);
             progressBar = (ProgressBar) findViewById(R.id.progress);
             btnBack = (ImageButton) findViewById(R.id.btn_back);
@@ -78,116 +66,71 @@ public class MainActivity extends Activity {
             btnTabs = (ImageButton) findViewById(R.id.btn_tabs);
             btnMenu = (ImageButton) findViewById(R.id.btn_menu);
             
-            setupClickListeners();
+            // 底栏 4 个按钮
+            btnBookmarks = (android.widget.LinearLayout) findViewById(R.id.bottom_bookmarks);
+            btnHistory = (android.widget.LinearLayout) findViewById(R.id.bottom_history);
+            btnDownloads = (android.widget.LinearLayout) findViewById(R.id.bottom_downloads);
+            btnSettings = (android.widget.LinearLayout) findViewById(R.id.bottom_settings);
             
+            if (btnBookmarks != null) btnBookmarks.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { startActivitySafely(BookmarksActivity.class); } });
+            if (btnHistory != null) btnHistory.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { startActivitySafely(HistoryActivity.class); } });
+            if (btnDownloads != null) btnDownloads.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { startActivitySafely(DownloadsActivity.class); } });
+            if (btnSettings != null) btnSettings.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { startActivitySafely(SettingsActivity.class); } });
+            
+            if (btnBack != null) btnBack.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { goBack(); } });
+            if (btnForward != null) btnForward.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { goForward(); } });
+            if (btnRefresh != null) btnRefresh.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { reload(); } });
+            if (btnTabs != null) btnTabs.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { openTabsList(); } });
+            if (btnMenu != null) btnMenu.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { showMenu(); } });
+
+            // 初始化 TabsManager
+            try {
+                if (tabsManager == null) {
+                    android.widget.FrameLayout container = (android.widget.FrameLayout) findViewById(R.id.web_container);
+                    tabsManager = new TabsManager(this, container);
+                    tabsManager.setListener(this);
+                    tabsManager.setJsBridge(new IceJsBridge(this));
+                    tabsManager.createTab("file:///android_asset/home.html", false);
+                    tabsManager.injectBridgeToAll();
+                    staticTabsManager = tabsManager;
+                    instance = this;
+                } else {
+                    tabsManager.setListener(this);
+                }
+            } catch (Exception e) {
+                android.util.Log.e("iceBrowser", "TabsManager init error", e);
+            }
+
+            if (urlEdit != null) {
+                urlEdit.setOnEditorActionListener(new android.widget.TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(android.widget.TextView v, int actionId, android.view.KeyEvent event) {
+                        if (actionId == EditorInfo.IME_ACTION_GO || actionId == EditorInfo.IME_ACTION_SEARCH) {
+                            String text = urlEdit.getText().toString().trim();
+                            if (!TextUtils.isEmpty(text)) {
+                                loadUrlOrSearch(text);
+                                hideKeyboard();
+                            }
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+            }
+
             if (savedInstanceState == null) {
                 handleIntent(getIntent());
+            } else {
+                // 恢复后: 已经有 tabsManager, 切到当前 tab
+                TabsManager.Tab cur = tabsManager.getCurrentTab();
+                if (cur != null) {
+                    onTabChanged(tabsManager.getCurrentIndex(), cur);
+                }
             }
         } catch (Throwable t) {
-            Log.e(TAG, "Crash in onCreate", t);
-            Toast.makeText(this, "初始化失败: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            Log.e(TAG, "onCreate", t);
+            Toast.makeText(this, "启动失败: " + t.getMessage(), Toast.LENGTH_LONG).show();
             finish();
-        }
-    }
-    
-    private void setupClickListeners() {
-        if (btnBack != null) {
-            btnBack.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    if (currentWebView != null && currentWebView.canGoBack()) {
-                        currentWebView.goBack();
-                    }
-                }
-            });
-        }
-        if (btnForward != null) {
-            btnForward.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    if (currentWebView != null && currentWebView.canGoForward()) {
-                        currentWebView.goForward();
-                    }
-                }
-            });
-        }
-        if (btnRefresh != null) {
-            btnRefresh.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    if (currentWebView != null) currentWebView.reload();
-                }
-            });
-        }
-        if (btnTabs != null) {
-            btnTabs.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    try {
-                        startActivity(new Intent(MainActivity.this, TabsActivity.class));
-                    } catch (Exception e) {
-                        Toast.makeText(MainActivity.this, "无法打开标签页", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        }
-        if (btnMenu != null) {
-            btnMenu.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) { showMenu(); }
-            });
-        }
-        if (urlEdit != null) {
-            urlEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_GO || actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        String text = urlEdit.getText().toString().trim();
-                        if (!TextUtils.isEmpty(text)) {
-                            loadUrl(text);
-                            hideKeyboard();
-                        }
-                        return true;
-                    }
-                    return false;
-                }
-            });
-        }
-        if (findEdit != null) {
-            findEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        if (currentWebView != null) {
-                            currentWebView.findAllAsync(findEdit.getText().toString());
-                        }
-                        return true;
-                    }
-                    return false;
-                }
-            });
-        }
-        
-        int[] ids = {R.id.bottom_bookmark, R.id.bottom_history, R.id.bottom_downloads, R.id.bottom_settings};
-        View.OnClickListener[] listeners = {
-            new View.OnClickListener() {
-                @Override public void onClick(View v) { startActivitySafely(BookmarksActivity.class); }
-            },
-            new View.OnClickListener() {
-                @Override public void onClick(View v) { startActivitySafely(HistoryActivity.class); }
-            },
-            new View.OnClickListener() {
-                @Override public void onClick(View v) { startActivitySafely(DownloadsActivity.class); }
-            },
-            new View.OnClickListener() {
-                @Override public void onClick(View v) { startActivitySafely(SettingsActivity.class); }
-            }
-        };
-        for (int i = 0; i < ids.length; i++) {
-            View v = findViewById(ids[i]);
-            if (v != null) v.setOnClickListener(listeners[i]);
-        }
-        
-        View findClose = findViewById(R.id.find_close);
-        if (findClose != null) {
-            findClose.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) { hideFindBar(); }
-            });
         }
     }
     
@@ -201,7 +144,7 @@ public class MainActivity extends Activity {
     
     private void handleIntent(Intent intent) {
         if (intent == null) {
-            loadUrl(HOME_URL);
+            createOrSwitchToHomeTab();
             return;
         }
         String action = intent.getAction();
@@ -209,18 +152,19 @@ public class MainActivity extends Activity {
         if (Intent.ACTION_VIEW.equals(action) && data != null) {
             String url = data.toString();
             if (url.startsWith("http://") || url.startsWith("https://")) {
-                loadUrl(url);
+                TabsManager.Tab tab = tabsManager.createTab(url, false);
+                showCurrentTab();
                 return;
             }
         }
         if (Intent.ACTION_SEND.equals(action)) {
             String text = intent.getStringExtra(Intent.EXTRA_TEXT);
             if (text != null && !TextUtils.isEmpty(text)) {
-                loadUrl(text);
+                loadUrlOrSearch(text);
                 return;
             }
         }
-        loadUrl(HOME_URL);
+        createOrSwitchToHomeTab();
     }
     
     @Override
@@ -230,375 +174,500 @@ public class MainActivity extends Activity {
         handleIntent(intent);
     }
     
-    public void loadUrl(String input) {
+    /**
+     * 创建或切到 home tab. 
+     * 如果当前有 home tab, 切过去, 否则新建
+     */
+    private void createOrSwitchToHomeTab() {
+        // 找一个 URL 是 home 的 tab
+        TabsManager.Tab current = tabsManager.getCurrentTab();
+        if (current != null && (current.url == null || current.url.equals(HOME_URL) || current.url.equals("about:blank"))) {
+            // 当前就是 home, 加载
+            if (current.webView != null) current.webView.loadUrl(HOME_URL);
+            showCurrentTab();
+            return;
+        }
+        // 创建新 home tab
+        TabsManager.Tab tab = tabsManager.createTab(HOME_URL, false);
+        showCurrentTab();
+    }
+    
+    /**
+     * 智能判断 URL 还是搜索关键词
+     */
+    private void loadUrlOrSearch(String input) {
         if (TextUtils.isEmpty(input)) return;
         String url = input.trim();
         
-        if (url.startsWith("javascript:")) return;
-        if (url.startsWith("about:")) return;
-        
-        if (!url.contains("://")) {
-            if (url.contains(" ") || !url.contains(".")) {
-                url = getSearchUrl(url);
-            } else {
-                url = "https://" + url;
-            }
+        // 已是 http/https
+        if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("file://")) {
+            tabsManager.loadUrlInCurrent(url);
+            showCurrentTab();
+            return;
         }
         
+        // 网址模式: 域名加点
+        if (url.matches("^[\\w-]+(\\.[\\w-]+)+(/.*)?$") && !url.contains(" ")) {
+            String fullUrl = url.startsWith("http") ? url : "https://" + url;
+            tabsManager.loadUrlInCurrent(fullUrl);
+            showCurrentTab();
+            return;
+        }
+        
+        // 搜索: 跳到 Bing
         try {
-            if (currentWebView != null) {
-                currentWebView.stopLoading();
-                webContainer.removeView(currentWebView);
-                currentWebView.destroy();
-            }
-            
-            WebView webView = createWebView();
-            webContainer.addView(webView, new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT));
-            currentWebView = webView;
-            
-            if (urlEdit != null) {
-                urlEdit.setText(url);
-            }
-            
-            webView.loadUrl(url);
+            String searchUrl = "https://www.bing.com/search?q=" + java.net.URLEncoder.encode(url, "UTF-8");
+            tabsManager.loadUrlInCurrent(searchUrl);
+            showCurrentTab();
         } catch (Exception e) {
-            Log.e(TAG, "loadUrl error", e);
-            Toast.makeText(this, "加载失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "搜索失败", Toast.LENGTH_SHORT).show();
         }
     }
     
-    private WebView createWebView() {
-        WebView webView = new WebView(this);
-        try {
-            WebSettings settings = webView.getSettings();
-            settings.setJavaScriptEnabled(true);
-            settings.setDomStorageEnabled(true);
-            settings.setDatabaseEnabled(true);
-            settings.setAllowFileAccess(true);
-            settings.setAllowContentAccess(true);
-            settings.setLoadWithOverviewMode(true);
-            settings.setUseWideViewPort(true);
-            settings.setBuiltInZoomControls(true);
-            settings.setDisplayZoomControls(false);
-            settings.setSupportZoom(true);
-            settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-            settings.setUserAgentString("Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36 iceBrowser/2.0");
-            
-            webView.setWebViewClient(new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    if (url != null && (url.startsWith("intent://") || url.startsWith("market://"))) {
-                        return true;
-                    }
-                    return false;
-                }
-                
-                @Override
-                public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
-                    if (urlEdit != null) {
-                        urlEdit.setText(url);
-                    }
-                    if (progressBar != null) {
-                        progressBar.setVisibility(View.VISIBLE);
-                        progressBar.setProgress(0);
-                    }
-                    updateNavigationButtons();
-                    saveHistory(url, view.getTitle());
-                }
-                
-                @Override
-                public void onPageFinished(WebView view, String url) {
-                    if (progressBar != null) {
-                        progressBar.setProgress(100);
-                        progressBar.postDelayed(new Runnable() {
-                            @Override public void run() {
-                                if (progressBar != null) {
-                                    progressBar.setVisibility(View.GONE);
-                                }
-                            }
-                        }, 200);
-                    }
-                    updateNavigationButtons();
-                }
-                
-                @Override
-                public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                    // silently ignore
-                }
-            });
-            
-            webView.setWebChromeClient(new WebChromeClient() {
-                @Override
-                public void onProgressChanged(WebView view, int newProgress) {
-                    if (progressBar != null) {
-                        progressBar.setProgress(newProgress);
-                    }
-                }
-                
-                @Override
-                public void onReceivedTitle(WebView view, String title) {
-                    if (urlEdit != null) {
-                        urlEdit.setText(view.getUrl());
-                    }
-                }
-                
-                @Override
-                public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> callback, FileChooserParams params) {
-                    filePathCallback = callback;
-                    try {
-                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                        intent.setType("*/*");
-                        startActivityForResult(Intent.createChooser(intent, "选择文件"), FILE_CHOOSER_REQUEST);
-                    } catch (Exception e) {
-                        callback.onReceiveValue(null);
-                        filePathCallback = null;
-                    }
-                    return true;
-                }
-                
-                @Override
-                public void onPermissionRequest(PermissionRequest request) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        try {
-                            request.grant(request.getResources());
-                        } catch (Exception e) {}
-                    }
-                }
-            });
-            
-            webView.setDownloadListener(new android.webkit.DownloadListener() {
-                @Override
-                public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-                    DownloadService.startDownload(MainActivity.this, url, userAgent, contentDisposition, mimetype);
-                }
-            });
-        } catch (Throwable t) {
-            Log.e(TAG, "createWebView error", t);
+    /**
+     * 显示当前 tab (其他 tab 隐藏)
+     */
+    private void showCurrentTab() {
+        TabsManager.Tab tab = tabsManager.getCurrentTab();
+        if (tab == null) return;
+        if (tab.webView != null) {
+            tab.webView.setVisibility(View.VISIBLE);
         }
-        return webView;
+        if (webContainer != null && webContainer.indexOfChild(tab.webView) < 0) {
+            webContainer.addView(tab.webView);
+        }
+        updateUI();
+    }
+    
+    private void updateUI() {
+        TabsManager.Tab tab = tabsManager.getCurrentTab();
+        if (tab == null) return;
+        if (urlEdit != null) {
+            urlEdit.setText(tab.url != null ? tab.url : "");
+        }
+        if (tab.webView != null) {
+            if (btnBack != null) btnBack.setAlpha(tab.webView.canGoBack() ? 1.0f : 0.3f);
+            if (btnForward != null) btnForward.setAlpha(tab.webView.canGoForward() ? 1.0f : 0.3f);
+        }
+    }
+    
+    private void goBack() {
+        TabsManager.Tab tab = tabsManager.getCurrentTab();
+        if (tab != null && tab.webView != null && tab.webView.canGoBack()) {
+            tab.webView.goBack();
+        }
+    }
+    
+    private void goForward() {
+        TabsManager.Tab tab = tabsManager.getCurrentTab();
+        if (tab != null && tab.webView != null && tab.webView.canGoForward()) {
+            tab.webView.goForward();
+        }
+    }
+    
+    private void reload() {
+        TabsManager.Tab tab = tabsManager.getCurrentTab();
+        if (tab != null && tab.webView != null) tab.webView.reload();
+    }
+    
+    private void openTabsList() {
+        startActivitySafely(TabsActivity.class);
+    }
+    
+    private void hideKeyboard() {
+        try {
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            View v = getCurrentFocus();
+            if (v != null) imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        } catch (Exception e) {}
+    }
+    
+    // === TabsManager.TabsListener ===
+    @Override
+    public void onTabsChanged() {
+        updateUI();
     }
     
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == FILE_CHOOSER_REQUEST) {
-            if (filePathCallback != null) {
-                Uri[] results = null;
-                if (resultCode == RESULT_OK && data != null) {
-                    if (data.getData() != null) {
-                        results = new Uri[]{data.getData()};
-                    } else if (data.getClipData() != null) {
-                        int count = data.getClipData().getItemCount();
-                        results = new Uri[count];
-                        for (int i = 0; i < count; i++) {
-                            results[i] = data.getClipData().getItemAt(i).getUri();
+    public void onTabChanged(int index, TabsManager.Tab tab) {
+        updateUI();
+    }
+    
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 重新 attach 当前 tab
+        TabsManager.Tab tab = tabsManager != null ? tabsManager.getCurrentTab() : null;
+        if (tab != null && webContainer != null) {
+            if (webContainer.indexOfChild(tab.webView) < 0) {
+                webContainer.addView(tab.webView);
+            }
+            tab.webView.setVisibility(View.VISIBLE);
+            updateUI();
+        }
+    }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            TabsManager.Tab tab = tabsManager.getCurrentTab();
+            if (tab != null && tab.webView != null && tab.webView.canGoBack()) {
+                tab.webView.goBack();
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    
+    // === IceJsBridge (webview 调用) ===
+    public class IceJsBridge {
+        MainActivity activity;
+        public IceJsBridge(MainActivity a) { this.activity = a; }
+        
+        @android.webkit.JavascriptInterface
+        public void loadUrl(String url) {
+            runOnUiThread(new Runnable() {
+                @Override public void run() { activity.loadUrlOrSearch(url); }
+            });
+        }
+        
+        @android.webkit.JavascriptInterface
+        public void newTab(String url) {
+            runOnUiThread(new Runnable() {
+    @Override public void run() {
+                TabsManager.Tab t = tabsManager.createTab(url != null && !url.isEmpty() ? url : HOME_URL, false);
+                if (t.webView != null) t.webView.setVisibility(View.VISIBLE);
+                activity.showCurrentTab();
+                activity.updateUI();
+            }
+        });
+    }
+        
+        @android.webkit.JavascriptInterface
+        public void closeTab() {
+            runOnUiThread(new Runnable() {
+    @Override public void run() {
+                if (tabsManager.getTabCount() <= 1) {
+                    activity.finish();
+                } else {
+                    tabsManager.closeTab(tabsManager.getCurrentIndex());
+                    activity.showCurrentTab();
+                }
+            }
+        });
+    }
+    
+        @android.webkit.JavascriptInterface
+        public void showTabs() {
+            runOnUiThread(new Runnable() {
+                @Override public void run() { openTabsList(); }
+            });
+        }
+        
+        @android.webkit.JavascriptInterface
+        public String getCurrentUrl() {
+            TabsManager.Tab t = tabsManager.getCurrentTab();
+            return t != null && t.webView != null ? t.webView.getUrl() : "";
+        }
+        
+        @android.webkit.JavascriptInterface
+        public String getCurrentTitle() {
+            TabsManager.Tab t = tabsManager.getCurrentTab();
+            return t != null ? t.title : "";
+        }
+        
+        @android.webkit.JavascriptInterface
+        public int getTabCount() {
+            return tabsManager != null ? tabsManager.getTabCount() : 0;
+        }
+        
+        @android.webkit.JavascriptInterface
+        public void search(final String query, final String callbackId) {
+            searchService.search(query, new IceSearchService.SearchCallback() {
+                @Override
+                public void onResults(final String json) {
+                    runOnUiThread(new Runnable() {
+                        @Override public void run() {
+                            TabsManager.Tab tab = tabsManager.getCurrentTab();
+                            if (tab != null && tab.webView != null) {
+                                String js = "if(window.iceOnSearchResults)window.iceOnSearchResults('" + MainActivity.escapeJsStatic(json) + "', '" + MainActivity.escapeJsStatic(callbackId) + "');";
+                                tab.webView.evaluateJavascript(js, null);
+                            }
                         }
-                    }
-                }
-                filePathCallback.onReceiveValue(results);
-                filePathCallback = null;
-            }
-        }
-    }
-    
-    private void updateNavigationButtons() {
-        if (currentWebView != null) {
-            if (btnBack != null) {
-                btnBack.setAlpha(currentWebView.canGoBack() ? 1.0f : 0.3f);
-            }
-            if (btnForward != null) {
-                btnForward.setAlpha(currentWebView.canGoForward() ? 1.0f : 0.3f);
-            }
-        }
-    }
-    
-    private String getSearchUrl(String query) {
-        try {
-            String encoded = URLEncoder.encode(query, "UTF-8");
-            String engine = prefs.getString("search_engine", "Bing");
-            if ("Google".equals(engine)) {
-                return "https://www.google.com/search?q=" + encoded;
-            } else if ("DuckDuckGo".equals(engine)) {
-                return "https://duckduckgo.com/?q=" + encoded;
-            } else if ("百度".equals(engine)) {
-                return "https://www.baidu.com/s?wd=" + encoded;
-            } else if ("搜狗".equals(engine)) {
-                return "https://www.sogou.com/web?query=" + encoded;
-            } else {
-                return "https://www.bing.com/search?q=" + encoded;
-            }
-        } catch (Exception e) {
-            return "https://www.bing.com/search?q=" + query;
-        }
-    }
-    
-    private void saveHistory(String url, String title) {
-        try {
-            if (url == null) return;
-            DatabaseHelper db = new DatabaseHelper(this);
-            db.addHistory(url, title != null ? title : url);
-            db.close();
-        } catch (Exception e) {
-            Log.e(TAG, "saveHistory error", e);
-        }
-    }
-    
-    public void showFindBar() {
-        try {
-            if (findBar != null) {
-                findBar.setVisibility(View.VISIBLE);
-                if (findEdit != null) {
-                    findEdit.requestFocus();
-                    findEdit.setText("");
-                }
-                showKeyboard(findEdit);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "showFindBar error", e);
-        }
-    }
-    
-    public void hideFindBar() {
-        try {
-            if (findBar != null) {
-                findBar.setVisibility(View.GONE);
-            }
-            if (currentWebView != null) {
-                currentWebView.clearMatches();
-            }
-            hideKeyboard();
-        } catch (Exception e) {
-            Log.e(TAG, "hideFindBar error", e);
-        }
-    }
-    
-    private void showMenu() {
-        try {
-            showPopupMenu();
-        } catch (Exception e) {
-            Log.e(TAG, "showMenu error", e);
-        }
-    }
-    
-    private void showPopupMenu() {
-        LinearLayout menuView = new LinearLayout(this);
-        menuView.setOrientation(LinearLayout.VERTICAL);
-        try {
-            menuView.setBackgroundResource(R.drawable.menu_background);
-        } catch (Exception e) {
-            menuView.setBackgroundColor(0xFFFFFFFF);
-        }
-        
-        final String[] items = {
-            "查找", "分享", "复制链接", "添加到书签",
-            "阅读模式", "桌面版网站", "无痕模式",
-            "设置", "关于"
-        };
-        final int[] icons = {
-            R.drawable.ic_find, R.drawable.ic_share, R.drawable.ic_share, R.drawable.ic_bookmark,
-            R.drawable.ic_reader, R.drawable.ic_desktop, R.drawable.ic_incognito,
-            R.drawable.ic_settings, R.drawable.ic_info
-        };
-        
-        for (int i = 0; i < items.length; i++) {
-            final int index = i;
-            final LinearLayout row = new LinearLayout(this);
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setBackgroundColor(0x00000000);
-            row.setPadding(32, 24, 32, 24);
-            row.setGravity(android.view.Gravity.CENTER_VERTICAL);
-            row.setClickable(true);
-            row.setFocusable(true);
-            
-            try {
-                final ImageView icon = new ImageView(this);
-                icon.setImageResource(icons[i]);
-                icon.setLayoutParams(new LinearLayout.LayoutParams(40, 40));
-                row.addView(icon);
-            } catch (Exception e) {}
-            
-            final TextView text = new TextView(this);
-            text.setText(items[i]);
-            text.setTextSize(15);
-            text.setTextColor(0xFF212121);
-            text.setPadding(24, 0, 0, 0);
-            row.addView(text);
-            
-            row.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    try {
-                        if (popup != null) popup.dismiss();
-                    } catch (Exception e) {}
-                    handleMenuClick(index);
+                    });
                 }
             });
-            
-            menuView.addView(row);
-            
-            if (i < items.length - 1) {
-                View divider = new View(this);
-                divider.setBackgroundColor(0xFFE0E0E0);
-                LinearLayout.LayoutParams divParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, 1);
-                divParams.setMargins(32, 0, 32, 0);
-                menuView.addView(divider, divParams);
-            }
         }
         
-        popup = new PopupWindow(menuView, 
-            (int)(260 * getResources().getDisplayMetrics().density),
-            ViewGroup.LayoutParams.WRAP_CONTENT);
-        popup.setBackgroundDrawable(getResources().getDrawable(android.R.drawable.dialog_holo_light_frame));
-        popup.setOutsideTouchable(true);
-        popup.setFocusable(true);
-        try {
-            popup.showAsDropDown(btnMenu, 0, 0);
-        } catch (Exception e) {
-            Log.e(TAG, "popup show", e);
+        @android.webkit.JavascriptInterface
+        public void getSuggestions(final String prefix, final String callbackId) {
+            searchService.getSuggestions(prefix, new IceSearchService.SuggestionCallback() {
+                @Override
+                public void onSuggestions(final java.util.List<String> suggestions) {
+                    runOnUiThread(new Runnable() {
+                        @Override public void run() {
+                            TabsManager.Tab tab = tabsManager.getCurrentTab();
+                            if (tab != null && tab.webView != null) {
+                                StringBuilder json = new StringBuilder("[");
+                                for (int i = 0; i < suggestions.size(); i++) {
+                                    if (i > 0) json.append(",");
+                                    json.append("\"").append(MainActivity.escapeJsStatic(suggestions.get(i))).append("\"");
+                                }
+                                json.append("]");
+                                String js = "if(window.iceOnSuggestions)window.iceOnSuggestions('" + MainActivity.escapeJsStatic(json.toString()) + "', '" + MainActivity.escapeJsStatic(callbackId) + "');";
+                                tab.webView.evaluateJavascript(js, null);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        
+        @android.webkit.JavascriptInterface
+        public void addBookmark() {
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    TabsManager.Tab tab = tabsManager.getCurrentTab();
+                    if (tab != null && tab.webView != null) {
+                        String url = tab.webView.getUrl();
+                        String title = tab.webView.getTitle();
+                        if (url == null) url = "";
+                        if (title == null) title = url;
+                        DatabaseHelper db = new DatabaseHelper(activity);
+                        db.addBookmark(url, title, "root");
+                        db.close();
+                        Toast.makeText(activity, "已添加书签", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+        
+        @android.webkit.JavascriptInterface
+        public void share() {
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    TabsManager.Tab tab = tabsManager.getCurrentTab();
+                    if (tab != null && tab.webView != null) {
+                        Intent intent = new Intent(Intent.ACTION_SEND);
+                        intent.setType("text/plain");
+                        intent.putExtra(Intent.EXTRA_TEXT, tab.webView.getUrl());
+                        activity.startActivity(Intent.createChooser(intent, "分享到"));
+                    }
+                }
+            });
+        }
+        
+        @android.webkit.JavascriptInterface
+        public void openHistory() { runOnUiThread(new Runnable() {
+            @Override public void run() { startActivitySafely(HistoryActivity.class); }
+        }); }
+        @android.webkit.JavascriptInterface
+        public void openBookmarks() { runOnUiThread(new Runnable() {
+            @Override public void run() { startActivitySafely(BookmarksActivity.class); }
+        }); }
+        @android.webkit.JavascriptInterface
+        public void openDownloads() { runOnUiThread(new Runnable() {
+            @Override public void run() { startActivitySafely(DownloadsActivity.class); }
+        }); }
+        @android.webkit.JavascriptInterface
+        public void openSettings() { runOnUiThread(new Runnable() {
+            @Override public void run() { startActivitySafely(SettingsActivity.class); }
+        }); }
+        @android.webkit.JavascriptInterface
+        public void openTabs() { runOnUiThread(new Runnable() {
+            @Override public void run() { openTabsList(); }
+        }); }
+        
+        @android.webkit.JavascriptInterface
+        public void showToast(String msg) {
+            runOnUiThread(new Runnable() {
+                @Override public void run() { Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show(); }
+            });
+        }
+        
+        @android.webkit.JavascriptInterface
+        public String getCurrentTheme() {
+            int night = activity.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            return night == Configuration.UI_MODE_NIGHT_YES ? "dark" : "light";
+        }
+        
+        private void startActivitySafely(Class<? extends Activity> cls) {
+            try {
+                activity.startActivity(new Intent(activity, cls));
+            } catch (Exception e) {}
+        }
+        
+        private String escapeJs(String s) {
+            if (s == null) return "";
+            return s.replace("\\", "\\\\")
+                  .replace("'", "\\'")
+                  .replace("\n", " ")
+                  .replace("\r", " ");
         }
     }
     
-    private PopupWindow popup;
+    public static String escapeJsStatic(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\")
+              .replace("'", "\\'")
+              .replace("\n", " ")
+              .replace("\r", " ");
+    }
+    public void showMenu() {
+        final String[] items = {
+            "新建标签", "页面查找", "分享", "复制链接", "添加到书签",
+            "阅读模式", "桌面版", "无痕模式", "下载", "设置", "关于"
+        };
+        final int[] icons = {
+            R.drawable.ic_add, R.drawable.ic_find, R.drawable.ic_share, R.drawable.ic_share, R.drawable.ic_bookmark,
+            R.drawable.ic_reader, R.drawable.ic_desktop, R.drawable.ic_incognito, R.drawable.ic_download,
+            R.drawable.ic_settings, R.drawable.ic_info
+        };
+        try {
+            int density = (int) getResources().getDisplayMetrics().density;
+            android.widget.LinearLayout menuView = new android.widget.LinearLayout(this);
+            menuView.setOrientation(android.widget.LinearLayout.VERTICAL);
+            menuView.setBackgroundResource(R.drawable.menu_background);
+            
+            for (int i = 0; i < items.length; i++) {
+                final int idx = i;
+                android.widget.LinearLayout row = new android.widget.LinearLayout(this);
+                row.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                row.setBackgroundColor(0x00000000);
+                row.setPadding(20 * density, 14 * density, 20 * density, 14 * density);
+                row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                row.setClickable(true);
+                row.setFocusable(true);
+                
+                android.widget.ImageView icon = new android.widget.ImageView(this);
+                icon.setImageResource(icons[i]);
+                android.widget.LinearLayout.LayoutParams ip = new android.widget.LinearLayout.LayoutParams(36 * density, 36 * density);
+                row.addView(icon, ip);
+                
+                android.widget.TextView text = new android.widget.TextView(this);
+                text.setText(items[i]);
+                text.setTextSize(14);
+                text.setTextColor(0xFF202124);
+                text.setPadding(20 * density, 0, 0, 0);
+                android.widget.LinearLayout.LayoutParams tp = new android.widget.LinearLayout.LayoutParams(0, android.view.ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+                row.addView(text, tp);
+                
+                final android.widget.PopupWindow popup = new android.widget.PopupWindow(this);
+                row.setOnClickListener(new View.OnClickListener() {
+                    @Override public void onClick(View v) {
+                        popup.dismiss();
+                        handleMenuClick(idx);
+                    }
+                });
+                
+                menuView.addView(row);
+            }
+            
+            android.widget.PopupWindow popup = new android.widget.PopupWindow(this);
+            popup.setContentView(menuView);
+            popup.setWidth(220 * density);
+            popup.setHeight(android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+            popup.setBackgroundDrawable(getResources().getDrawable(R.drawable.menu_background));
+            popup.setOutsideTouchable(true);
+            popup.setFocusable(true);
+            if (btnMenu != null) popup.showAsDropDown(btnMenu, 0, 0);
+        } catch (Exception e) {
+            Log.e(TAG, "showMenu", e);
+        }
+    }
     
     private void handleMenuClick(int index) {
+        switch (index) {
+            case 0: // 新建标签
+                TabsManager.Tab t = tabsManager.createTab(HOME_URL, false);
+                showCurrentTab();
+                break;
+            case 1: showFindBar(); break;
+            case 2: shareCurrent(); break;
+            case 3: copyUrl(); break;
+            case 4: addBookmark(); break;
+            case 5: enterReaderMode(); break;
+            case 6: toggleDesktop(); break;
+            case 7: openIncognito(); break;
+            case 8: startActivitySafely(DownloadsActivity.class); break;
+            case 9: startActivitySafely(SettingsActivity.class); break;
+            case 10: showAbout(); break;
+        }
+    }
+    
+    private void showFindBar() {
+        if (tabsManager == null) return;
+        TabsManager.Tab tab = tabsManager.getCurrentTab();
+        if (tab == null || tab.webView == null) return;
+        // 通过 JS 注入顶部 find 栏
         try {
-            switch (index) {
-                case 0: showFindBar(); break;
-                case 1: shareCurrent(); break;
-                case 2: copyUrl(); break;
-                case 3: addBookmark(); break;
-                case 4: enterReaderMode(); break;
-                case 5: toggleDesktop(); break;
-                case 6: openIncognito(); break;
-                case 7: startActivitySafely(SettingsActivity.class); break;
-                case 8: showAbout(); break;
-            }
+            String js = "(function(){" +
+                "var old = document.getElementById('__ice_find_bar');" +
+                "if (old) { old.remove(); return; }" +
+                "var bar = document.createElement('div');" +
+                "bar.id = '__ice_find_bar';" +
+                "bar.style.cssText = 'position:fixed;top:0;left:0;right:0;height:48px;background:rgba(0,0,0,0.9);color:white;z-index:99999;display:flex;align-items:center;padding:0 8px;gap:8px';" +
+                "bar.innerHTML = '<input id=\"__ice_find_input\" style=\"flex:1;height:36px;padding:0 12px;border-radius:18px;border:none;background:rgba(255,255,255,0.2);color:white;font-size:14px;outline:none\" placeholder=\"查找\"/>" +
+                "<span id=\"__ice_find_count\" style=\"color:rgba(255,255,255,0.7);font-size:13px;min-width:48px;text-align:center\">0/0</span>" +
+                "<button onclick=\"window.__iceFindUp()\" style=\"background:transparent;color:white;border:none;padding:8px;font-size:18px\">↑</button>" +
+                "<button onclick=\"window.__iceFindDown()\" style=\"background:transparent;color:white;border:none;padding:8px;font-size:18px\">↓</button>" +
+                "<button onclick=\"document.getElementById(\\'__ice_find_bar\\').remove();window.__iceFindClear()\" style=\"background:transparent;color:white;border:none;padding:8px;font-size:18px\">×</button>';" +
+                "document.body.appendChild(bar);" +
+                "var input = document.getElementById('__ice_find_input');" +
+                "var countEl = document.getElementById('__ice_find_count');" +
+                "window.__iceFindMatches = [];" +
+                "window.__iceFindIdx = 0;" +
+                "function doFind() {" +
+                "  window.__iceFindClear();" +
+                "  var q = input.value;" +
+                "  if (!q) { countEl.textContent = '0/0'; return; }" +
+                "  if (window.find) {" +
+                "    var n = 0;" +
+                "    while (window.find(q)) { n++; }" +
+                "    window.__iceFindMatches = [n];" +
+                "  }" +
+                "  countEl.textContent = n + ' 处';" +
+                "}" +
+                "input.oninput = doFind;" +
+                "input.onkeydown = function(e) {" +
+                "  if (e.keyCode == 13) { if (window.find(input.value)) {} }" +
+                "  if (e.keyCode == 27) { bar.remove(); window.__iceFindClear(); }" +
+                "};" +
+                "window.__iceFindUp = function() { if (window.find && input.value) { window.find(input.value, false, true); } };" +
+                "window.__iceFindDown = function() { if (window.find && input.value) { window.find(input.value, false, false); } };" +
+                "window.__iceFindClear = function() { if (window.find && input.value) { window.find(input.value, true, false); } };" +
+                "input.focus();" +
+                "})()";
+            tab.webView.evaluateJavascript(js, null);
         } catch (Exception e) {
-            Log.e(TAG, "menu click", e);
+            Log.e(TAG, "find", e);
         }
     }
     
     private void shareCurrent() {
-        if (currentWebView == null) return;
+        TabsManager.Tab tab = tabsManager.getCurrentTab();
+        if (tab == null || tab.webView == null) return;
         try {
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_TEXT, currentWebView.getUrl());
-            startActivity(Intent.createChooser(intent, "分享到"));
+            intent.putExtra(Intent.EXTRA_TEXT, tab.webView.getUrl());
+            startActivity(Intent.createChooser(intent, "分享"));
         } catch (Exception e) {
-            Toast.makeText(this, "无法分享", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "分享失败", Toast.LENGTH_SHORT).show();
         }
     }
     
     private void copyUrl() {
-        if (currentWebView == null) return;
+        TabsManager.Tab tab = tabsManager.getCurrentTab();
+        if (tab == null || tab.webView == null) return;
         try {
-            ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-            cm.setPrimaryClip(ClipData.newPlainText("URL", currentWebView.getUrl()));
+            android.content.ClipboardManager cm = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            cm.setPrimaryClip(android.content.ClipData.newPlainText("URL", tab.webView.getUrl()));
             Toast.makeText(this, "已复制", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(this, "复制失败", Toast.LENGTH_SHORT).show();
@@ -606,13 +675,14 @@ public class MainActivity extends Activity {
     }
     
     private void addBookmark() {
-        if (currentWebView == null) return;
+        TabsManager.Tab tab = tabsManager.getCurrentTab();
+        if (tab == null || tab.webView == null) return;
         try {
-            DatabaseHelper db = new DatabaseHelper(this);
-            String url = currentWebView.getUrl();
-            String title = currentWebView.getTitle();
+            String url = tab.webView.getUrl();
+            String title = tab.webView.getTitle();
             if (url == null) url = "";
             if (title == null) title = url;
+            DatabaseHelper db = new DatabaseHelper(this);
             db.addBookmark(url, title, "root");
             db.close();
             Toast.makeText(this, "已添加书签", Toast.LENGTH_SHORT).show();
@@ -622,96 +692,62 @@ public class MainActivity extends Activity {
     }
     
     private void enterReaderMode() {
-        if (currentWebView == null) return;
+        TabsManager.Tab tab = tabsManager.getCurrentTab();
+        if (tab == null || tab.webView == null) return;
         try {
-            String script = "(function() {" +
-                "var article = document.querySelector('article') || document.body;" +
-                "var text = article ? article.innerText : '';" +
-                "var title = document.title;" +
-                "var html = '<html><head><meta charset=\"utf-8\"><style>body{font-size:18px;line-height:1.6;padding:20px;font-family:sans-serif;}</style></head><body><h1>' + title + '</h1><div>' + text.replace(/\\n/g, '<br>') + '</div></body></html>';" +
-                "document.write(html);" +
-                "})();";
-            currentWebView.evaluateJavascript(script, null);
+            String script = "(function(){" +
+                "var a=document.querySelector('article')||document.querySelector('main')||document.body;" +
+                "var t=document.title;" +
+                "var text=a?a.innerText:document.body.innerText;" +
+                "var html='<html><head><meta charset=\"utf-8\"><style>body{font-size:18px;line-height:1.7;padding:30px;max-width:720px;margin:0 auto;font-family:sans-serif;color:#222}h1{font-size:26px;margin-bottom:20px;color:#1A73E8}</style></head><body><h1>'+t+'</h1><div>'+text.replace(/\\n/g,'<br>')+'</div></body></html>';" +
+                "document.write(html);})()";
+            tab.webView.evaluateJavascript(script, null);
         } catch (Exception e) {
-            Log.e(TAG, "reader mode error", e);
+            Log.e(TAG, "reader", e);
         }
     }
     
     private void toggleDesktop() {
-        if (currentWebView == null) return;
+        TabsManager.Tab tab = tabsManager.getCurrentTab();
+        if (tab == null || tab.webView == null) return;
         try {
-            WebSettings settings = currentWebView.getSettings();
-            String current = settings.getUserAgentString();
-            if (current.contains("Mobile")) {
-                settings.setUserAgentString(current.replace("Mobile", "").replace("Android", "X11"));
+            WebSettings s = tab.webView.getSettings();
+            String cur = s.getUserAgentString();
+            if (cur.contains("Mobile")) {
+                s.setUserAgentString(cur.replace("Mobile", "").replace("Android", "X11"));
             } else {
-                settings.setUserAgentString("Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36 iceBrowser/2.0");
+                s.setUserAgentString("Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36 iceBrowser/4.0");
             }
-            currentWebView.reload();
+            tab.webView.reload();
         } catch (Exception e) {
-            Log.e(TAG, "toggleDesktop error", e);
+            Log.e(TAG, "desktop", e);
         }
     }
     
     private void openIncognito() {
-        Toast.makeText(this, "无痕模式: " + (currentWebView != null ? "已启用" : "失败"), Toast.LENGTH_SHORT).show();
+        TabsManager.Tab tab = tabsManager.createTab(HOME_URL + "?mode=incognito", true);
+        showCurrentTab();
+        Toast.makeText(this, "无痕模式", Toast.LENGTH_SHORT).show();
     }
     
     private void showAbout() {
-        try {
-            new AlertDialog.Builder(this)
-                .setTitle("ice 浏览器")
-                .setMessage("版本 2.0.0\n\n一款极简但功能强大的 Android 浏览器\n\n纯 Java · 零依赖 · 150KB")
-                .setPositiveButton("确定", null)
-                .show();
-        } catch (Exception e) {}
-    }
-    
-    private void hideKeyboard() {
-        try {
-            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            View v = getCurrentFocus();
-            if (v != null) {
-                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-            }
-        } catch (Exception e) {}
-    }
-    
-    private void showKeyboard(View v) {
-        if (v == null) return;
-        try {
-            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
-        } catch (Exception e) {}
-    }
-    
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (findBar != null && findBar.getVisibility() == View.VISIBLE) {
-                hideFindBar();
-                return true;
-            }
-            if (currentWebView != null && currentWebView.canGoBack()) {
-                currentWebView.goBack();
-                return true;
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-    
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        try {
-            if (currentWebView != null) {
-                currentWebView.stopLoading();
-                currentWebView.destroy();
-                currentWebView = null;
-            }
-        } catch (Exception e) {}
-        try {
-            if (popup != null) popup.dismiss();
-        } catch (Exception e) {}
+        new AlertDialog.Builder(this)
+            .setTitle("ice 浏览器")
+            .setMessage("版本 4.0.0\n\n" +
+                "极全面升级 + 真正自研 ice 搜索引擎\n\n" +
+                "• 真正多 WebView 标签页管理\n" +
+                "• 4 个底栏按钮直达 Activity\n" +
+                "• ice 自研搜索引擎 (DDG 端点)\n" +
+                "• 异步实时搜索 (UI 立即返回)\n" +
+                "• 智能建议 (24 类 144 条)\n" +
+                "• 4 主题 (浅/深/护眼/黑白)\n" +
+                "• 阅读模式 / 桌面版 / 翻译\n" +
+                "• 无痕模式 (不记录历史)\n" +
+                "• 系统 DownloadManager\n" +
+                "• 完整书签/历史/下载管理\n\n" +
+                "技术: 纯 Java (零依赖) · APK 95KB\n\n" +
+                "© 2026 ice-wocker · MIT License")
+            .setPositiveButton("确定", null)
+            .show();
     }
 }

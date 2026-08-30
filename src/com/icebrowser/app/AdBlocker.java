@@ -1,5 +1,6 @@
 package com.icebrowser.app;
 
+import android.content.Context;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 
@@ -13,7 +14,7 @@ public class AdBlocker {
     private final Set<Pattern> patterns = new HashSet<>();
     private boolean enabled = true;
 
-    public AdBlocker() {
+    public AdBlocker(Context ctx) {
         loadRules();
     }
 
@@ -31,6 +32,11 @@ public class AdBlocker {
         for (String d : domains) {
             blockedDomains.add(d);
         }
+    }
+
+    public boolean shouldBlock(WebResourceRequest req) {
+        if (req == null) return false;
+        return shouldBlock(req.getUrl().toString());
     }
 
     public boolean shouldBlock(String url) {

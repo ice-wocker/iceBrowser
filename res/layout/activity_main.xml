@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:background="#FFFFFF">
 
-    <!-- Top bar with URL -->
+    <!-- 顶部栏 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -86,88 +86,116 @@
         android:progress="0"
         android:visibility="gone" />
 
+    <!-- WebView 容器: 多 WebView 同位置, 切换显示/隐藏 -->
     <FrameLayout
         android:id="@+id/web_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <LinearLayout
-        android:id="@+id/find_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#F5F5F5"
-        android:padding="8dp"
-        android:visibility="gone">
-
-        <EditText
-            android:id="@+id/find_edit"
-            android:layout_width="0dp"
-            android:layout_height="36dp"
-            android:layout_weight="1"
-            android:hint="查找..."
-            android:imeOptions="actionSearch"
-            android:inputType="text"
-            android:maxLines="1"
-            android:background="@drawable/url_bar_background"
-            android:paddingHorizontal="12dp"
-            android:textSize="14sp"
-            android:singleLine="true" />
-
-        <ImageButton
-            android:id="@+id/find_close"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_close"
-            android:padding="6dp"
-            android:contentDescription="关闭" />
-
-    </LinearLayout>
-
+    <!-- 底栏: 4 个真按钮, 各跳到独立 Activity -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="52dp"
         android:background="#FFFFFF"
         android:orientation="horizontal"
-        android:elevation="4dp">
+        android:elevation="8dp">
 
-        <ImageView
-            android:id="@+id/bottom_bookmark"
+        <LinearLayout
+            android:id="@+id/bottom_bookmarks"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:padding="12dp"
-            android:src="@drawable/ic_bookmark"
-            android:contentDescription="书签" />
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackground">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_bookmark"
+                android:layout_marginTop="6dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="书签"
+                android:textSize="10sp"
+                android:textColor="#5F6368"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
 
-        <ImageView
+        <LinearLayout
             android:id="@+id/bottom_history"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:padding="12dp"
-            android:src="@drawable/ic_history"
-            android:contentDescription="历史" />
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackground">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_history"
+                android:layout_marginTop="6dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="历史"
+                android:textSize="10sp"
+                android:textColor="#5F6368"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
 
-        <ImageView
+        <LinearLayout
             android:id="@+id/bottom_downloads"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:padding="12dp"
-            android:src="@drawable/ic_download"
-            android:contentDescription="下载" />
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackground">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_download"
+                android:layout_marginTop="6dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="下载"
+                android:textSize="10sp"
+                android:textColor="#5F6368"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
 
-        <ImageView
+        <LinearLayout
             android:id="@+id/bottom_settings"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:padding="12dp"
-            android:src="@drawable/ic_settings"
-            android:contentDescription="设置" />
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackground">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_settings"
+                android:layout_marginTop="6dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="设置"
+                android:textSize="10sp"
+                android:textColor="#5F6368"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
 
     </LinearLayout>
 

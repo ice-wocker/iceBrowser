@@ -8,6 +8,8 @@ build/
 *.zip
 *.jks
 *.keystore
+*.idsig
+keystore.jks
 
 # IDE
 .idea/

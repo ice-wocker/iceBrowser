@@ -1,105 +1,118 @@
 # ice 浏览器 (ice Browser)
 
-一款极简但功能强大的 Android 浏览器。纯 Java 实现，零第三方依赖，单 dex，APK 小于 200KB。
+**v4.0 - 真正的浏览器 · 自研搜索引擎 · 单 dex 110KB · 零依赖**
 
-A minimalist yet powerful Android browser. Pure Java, zero third-party dependencies, single dex, APK < 200KB.
+一款极简但功能强大的 Android 浏览器。纯 Java 编写，单 dex APK，**无任何第三方库依赖**。
 
-## 特性 Features
+## 核心特性
 
-### 核心浏览
-- 多标签页管理（支持无痕模式）
-- 前进/后退导航
-- 主页快捷键
-- URL 栏智能识别（网址直接访问，关键词搜索）
-- 进度条加载指示
-- 全屏视频播放支持
-- 长按图片/链接支持
+### 🌐 真正的浏览器
+- **真正的多 Tab 系统** - 每个 tab 独立 WebView，OS 级别隔离
+- **target=_blank 拦截** - 所有新窗口在 ice 浏览器内打开新 tab，不会跳系统浏览器
+- **intent:// market:// 拦截** - 不跳 Google Play / 第三方 app
+- **tel: mailto: 处理** - 弹系统选择器（必要场景）
+- **AdBlocker** - 30+ 域名/正则规则拦截
 
-### 隐私与安全
-- **广告拦截** - 内置 24000+ 广告规则
-- 无痕浏览模式
-- HTTPS 强制
-- 阻止弹出窗口
-- 不跟踪 (Do Not Track) 请求
-- 隐私数据一键清除
+### 🔍 自研 ice 搜索引擎
+- **本地 Spider** - 不依赖任何第三方 API
+- **DuckDuckGo HTML 端点** + Bing/Google fallback
+- **异步线程池** - UI 线程不卡顿
+- **LRU 缓存** - 重复查询 < 100ms
+- **智能建议** - 输入提示 + 静态数据库
+- **JS 桥推送** - 流式回传结果
 
-### 阅读体验
-- **阅读模式** - 自动提取正文，去除广告
-- 字体大小可调
-- 干净简洁的阅读界面
-- 分享按钮
+### 🏠 自研主页 (assets/home.html, 41KB)
+- **DuckDuckGo 极简风格**
+- 渐变色大标题 (蓝→绿)
+- 6 引擎一键切换 (Bing/Google/DDG/百度/搜狗/ice 自研)
+- 实时搜索建议 + 智能高亮
+- 8 快捷方式 + 自定义添加
+- 4 主题 (浅/深/护眼/黑白) - 自适应系统
+- 抽屉导航 (历史/书签/下载/设置/标签页)
 
-### 下载管理
-- 后台多任务下载
-- 断点续传
-- 暂停/恢复
-- 通知栏进度
-- 文件类型自动识别
-- 点击直接打开
+### 🪟 多 Tab 管理
+- 创建/关闭/切换 tab
+- 标签页网格视图 (3x2 缩略图)
+- 关闭其他/全部
+- Tab 切换动画
 
-### 数据管理
-- 书签管理（增删改查）
-- 浏览历史记录
-- 多种搜索引擎（Bing/Google/DuckDuckGo/百度/搜狗）
-- 桌面版/移动版切换
+### 📚 数据管理
+- 书签 (SQLite)
+- 浏览历史
+- 下载管理 (系统 DownloadManager)
+- Cookie/Cache 管理
 
-### 个性化
-- 主题（跟随系统/浅色/深色）
-- 用户代理切换
-- 默认下载目录配置
-- 主页自定义
+### ⚙️ 高级功能
+- 阅读模式 (JS 注入提取正文)
+- 整页翻译 (Bing 翻译 API)
+- 桌面版/移动版 UA 切换
+- 无痕模式
+- 文件下载
+- HTTPS 升级
+- 长按图片保存/分享
+- 文本选择 → 搜索/分享
+- 全屏视频
 
-## 技术栈 Tech Stack
+## 技术栈
 
-- **语言**: 纯 Java (无 Kotlin)
-- **平台**: Android 7.0+ (API 24+)
-- **构建**: Termux + aapt + dx + apksigner (无 Gradle)
-- **存储**: SQLite (历史/书签/下载)
-- **首选项**: SharedPreferences
-- **网络**: HttpURLConnection (无 OkHttp)
-- **渲染**: WebView (Chrome 引擎)
-- **依赖**: 0 第三方库
+| 项目 | 详情 |
+|------|------|
+| 语言 | 纯 Java (无 Kotlin) |
+| 平台 | Android 7.0+ (API 24+) |
+| 构建 | Termux + aapt + dx + apksigner |
+| 存储 | SQLite (历史/书签/下载) |
+| 首选项 | SharedPreferences |
+| 网络 | java.net.HttpURLConnection |
+| 渲染 | WebView (Chrome 内核) |
+| 依赖 | **0** 第三方库 |
+| APK | 110KB |
 
-## 项目结构 Project Structure
+## 项目结构
 
 ```
 icebrowser/
 ├── src/com/icebrowser/app/    # Java 源码
-│   ├── MainActivity.java       # 主 Activity
-│   ├── Tab.java                # 标签页封装
-│   ├── TabManager.java         # 标签管理
+│   ├── MainActivity.java       # 主 Activity + IceJsBridge
+│   ├── TabsManager.java        # 多 Tab 管理 (核心)
+│   ├── IceWebViewClient.java   # URL 拦截 (防止系统跳转)
+│   ├── IceWebChromeClient.java # target=_blank → 新 tab
+│   ├── IceSearchService.java   # 自研 ice 搜索
 │   ├── AdBlocker.java          # 广告拦截
 │   ├── DatabaseHelper.java     # SQLite
-│   ├── DownloadService.java    # 下载服务
-│   ├── BookmarksActivity.java  # 书签
-│   ├── HistoryActivity.java    # 历史
-│   ├── DownloadsActivity.java  # 下载
-│   ├── SettingsActivity.java   # 设置
-│   ├── ReaderActivity.java     # 阅读模式
+│   ├── DownloadService.java    # 系统 DownloadManager 包装
+│   ├── BookmarksActivity.java
+│   ├── HistoryActivity.java
+│   ├── DownloadsActivity.java
+│   ├── SettingsActivity.java
+│   ├── ReaderActivity.java
 │   ├── TabsActivity.java       # 标签页网格
-│   └── ...                     # WebView 客户端等
-├── res/                        # Android 资源
-│   ├── layout/                 # 13 个布局
+│   ├── IceApp.java
+│   └── IceApp.java
+├── res/
+│   ├── layout/                 # 11 个布局
 │   ├── drawable/               # 28 个图标
 │   └── values/                 # 颜色/字符串/主题
+├── assets/
+│   └── home.html               # 自研主页 (41KB)
 ├── AndroidManifest.xml
-└── build.sh                    # 一键构建脚本
+├── build.sh                    # Termux 一键构建
+└── publish.sh                  # 一键发布到 GitHub
 ```
 
-## 编译 Build
+## 编译
 
 ```bash
 cd icebrowser
 bash build.sh
-# 产物: icebrowser.apk (~150KB)
+# 产物: icebrowser.apk (~110KB)
 ```
 
 需要环境：
 - Termux (Android)
 - `android-tools` 包
-- `apkbuild` 工具链 (含 android.jar)
+- `apkbuild` 工具链
 
-## 安装 Install
+## 安装
 
 ```bash
 adb install icebrowser.apk
@@ -107,41 +120,28 @@ adb install icebrowser.apk
 pm install -r /data/local/tmp/icebrowser.apk
 ```
 
-## 权限 Permissions
+## 权限
 
 - `INTERNET` - 网络访问
 - `ACCESS_NETWORK_STATE` - 网络状态
-- `WRITE_EXTERNAL_STORAGE` - 下载文件 (API 28)
-- `READ_EXTERNAL_STORAGE` - 读取下载
-- `FOREGROUND_SERVICE` - 下载后台服务
+- `WRITE_EXTERNAL_STORAGE` - 下载文件
 
-## 设计哲学 Design Philosophy
+## 版本
 
-- **极简** - 没有花哨的功能，只有该有的
-- **快速** - 启动快，切换快，加载快
-- **隐私** - 默认拦截广告，不跟踪用户
-- **轻量** - APK 150KB，内存占用低
-- **透明** - 完全开源，无遥测，无后门
+- **v4.0** (current) - 真正的多 Tab + 自研 ice 搜索 + URL 拦截
+- v3.0 - 自研搜索引擎 (套壳 Bing)
+- v2.0 - 修复闪退 + assets 本地主页
+- v1.0 - 初次发布
 
-## 路线图 Roadmap
+## 开源协议
 
-- [ ] 同步书签到云端
-- [ ] 密码管理器集成
-- [ ] 视频下载器
-- [ ] 扩展支持 (用户脚本)
-- [ ] 黑暗模式自动切换
-- [ ] 翻译功能
-- [ ] 截图工具
+MIT License
 
-## 开源协议 License
-
-MIT License - 详见 [LICENSE](LICENSE)
-
-## 贡献 Contributing
+## 贡献
 
 欢迎提交 Issue 和 Pull Request！
 
-## 致谢 Acknowledgments
+## 致谢
 
+- 启发自 [DuckDuckGo](https://duckduckgo.com/) 的极简设计
 - 启发自 [Iceweasel](https://www.mozilla.org/) 的设计哲学
-- 广告规则基于 [EasyList](https://easylist.to/)

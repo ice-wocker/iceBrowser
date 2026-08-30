@@ -1,239 +1,970 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+<meta name="theme-color" content="#1A73E8">
 <title>ice 浏览器</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
     background: #FFFFFF;
-    color: #212121;
-    padding: 24px;
+    color: #202124;
     min-height: 100vh;
+    overflow-x: hidden;
 }
-.header {
-    text-align: center;
-    padding: 32px 0 24px;
+body.dark { background: #202124; color: #E8EAED; }
+
+/* 顶部 */
+.top-bar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; height: 56px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
+body.dark .top-bar { background: rgba(32, 33, 36, 0.95); border-bottom-color: rgba(255, 255, 255, 0.08); }
+
 .logo {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 16px;
-    background: linear-gradient(135deg, #1A73E8 0%, #4285F4 100%);
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 48px;
-    font-weight: bold;
-    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
-}
-.title {
-    font-size: 24px;
-    font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 18px; font-weight: 600;
     color: #1A73E8;
-    margin-bottom: 8px;
+    user-select: none;
 }
-.subtitle {
-    font-size: 14px;
-    color: #757575;
+body.dark .logo { color: #8AB4F8; }
+.logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, #1A73E8 0%, #4285F4 100%);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 18px; font-weight: bold;
+    box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
 }
-.search-box {
-    margin: 32px 0;
-    background: #F1F3F4;
-    border-radius: 24px;
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-.search-box input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-size: 16px;
-    color: #212121;
-}
-.search-box button {
+
+.tab-count {
     background: #1A73E8;
     color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 16px;
-    font-size: 14px;
-    cursor: pointer;
-}
-.section {
-    margin: 24px 0;
-}
-.section-title {
-    font-size: 13px;
-    color: #757575;
-    margin-bottom: 12px;
-    padding-left: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.shortcuts {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-}
-.shortcut {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: #212121;
-    padding: 8px;
+    padding: 2px 8px;
     border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 4px;
+    min-width: 24px;
+    text-align: center;
+}
+
+.top-actions { display: flex; gap: 4px; }
+.icon-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: transparent; border: none; color: #5F6368;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
     transition: background 0.2s;
 }
-.shortcut:active {
-    background: #F1F3F4;
+body.dark .icon-btn { color: #BDC1C6; }
+.icon-btn:hover, .icon-btn:active { background: rgba(0, 0, 0, 0.04); }
+body.dark .icon-btn:hover, .icon-btn:active { background: rgba(255, 255, 255, 0.08); }
+.icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
+
+/* 主体 */
+.main { max-width: 720px; margin: 0 auto; padding: 0 16px; }
+
+/* 标题 */
+.hero { padding: 60px 0 24px 0; text-align: center; }
+.hero-title {
+    font-size: 56px; font-weight: 700;
+    background: linear-gradient(135deg, #1A73E8 0%, #4285F4 50%, #34A853 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 8px; letter-spacing: -1px; line-height: 1.1;
 }
-.shortcut-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 24px;
-    background: #F1F3F4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: 6px;
+.hero-tagline { font-size: 14px; color: #5F6368; margin-bottom: 32px; }
+body.dark .hero-tagline { color: #9AA0A6; }
+
+/* 搜索框 */
+.search-container { position: relative; margin-bottom: 16px; }
+.search-box {
+    display: flex; align-items: center;
+    background: #F1F3F4; border-radius: 28px;
+    padding: 0 8px 0 20px; height: 56px;
+    transition: box-shadow 0.2s, background 0.2s;
+    border: 1px solid transparent;
 }
-.shortcut-name {
-    font-size: 11px;
-    text-align: center;
-}
-.news {
+body.dark .search-box { background: #3C4043; }
+.search-box:focus-within {
     background: #FFFFFF;
-    border: 1px solid #E8EAED;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(26, 115, 232, 0.3);
 }
-.news-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: #1A73E8;
-    margin-bottom: 6px;
-    text-decoration: none;
-    display: block;
+body.dark .search-box:focus-within { background: #202124; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(138, 180, 248, 0.4); }
+
+.engine-icon {
+    width: 24px; height: 24px;
+    margin-right: 12px; flex-shrink: 0;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: bold; font-size: 13px;
+    background: #4285F4;
 }
-.news-desc {
-    font-size: 13px;
-    color: #5F6368;
-    line-height: 1.5;
+body.dark .engine-icon { background: #8AB4F8; color: #202124; }
+
+.search-input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-size: 16px; color: inherit; font-family: inherit;
+    padding: 0 8px; min-width: 0;
 }
-.footer {
-    text-align: center;
-    margin: 32px 0 16px;
-    color: #9AA0A6;
-    font-size: 11px;
+.search-input::placeholder { color: #9AA0A6; }
+
+.search-btn {
+    background: #1A73E8; color: white; border: none;
+    height: 40px; padding: 0 18px; border-radius: 20px;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    margin-left: 4px; font-family: inherit;
+}
+.search-btn:hover { background: #1557B0; }
+.search-btn:active { transform: scale(0.97); }
+.search-btn:disabled { background: #9AA0A6; }
+
+/* 引擎 */
+.engine-tabs {
+    display: flex; gap: 4px; margin-bottom: 24px; padding: 4px;
+    background: #F1F3F4; border-radius: 20px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+body.dark .engine-tabs { background: #3C4043; }
+.engine-tabs::-webkit-scrollbar { display: none; }
+.engine-tab {
+    flex-shrink: 0; padding: 8px 14px;
+    background: transparent; border: none; color: #5F6368;
+    font-size: 13px; font-weight: 500; border-radius: 16px;
+    cursor: pointer; font-family: inherit; white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+}
+.engine-tab.active { background: #FFFFFF; color: #1A73E8; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); }
+body.dark .engine-tab { color: #BDC1C6; }
+body.dark .engine-tab.active { background: #202124; color: #8AB4F8; }
+
+/* 建议 */
+.suggestions {
+    position: absolute; top: 56px; left: 0; right: 0;
+    background: #FFFFFF; border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+    z-index: 50; display: none; overflow: hidden;
+    max-height: 360px; overflow-y: auto;
+}
+body.dark .suggestions { background: #2D2E30; }
+.suggestions.show { display: block; }
+.suggestion-item {
+    padding: 12px 20px; display: flex; align-items: center; gap: 16px;
+    cursor: pointer; border-bottom: 1px solid #F1F3F4;
+}
+body.dark .suggestion-item { border-bottom-color: #3C4043; }
+.suggestion-item:last-child { border-bottom: none; }
+.suggestion-item:hover, .suggestion-item.active { background: #F8F9FA; }
+body.dark .suggestion-item:hover, body.dark .suggestion-item.active { background: #3C4043; }
+.suggestion-icon { color: #9AA0A6; flex-shrink: 0; }
+.suggestion-icon svg { width: 18px; height: 18px; fill: currentColor; }
+.suggestion-text { flex: 1; font-size: 15px; }
+.suggestion-text mark { color: #1A73E8; font-weight: 600; background: transparent; }
+.suggestion-type { font-size: 11px; color: #9AA0A6; padding: 2px 6px; background: #F1F3F4; border-radius: 4px; }
+body.dark .suggestion-type { background: #3C4043; color: #BDC1C6; }
+
+/* 快捷方式 */
+.shortcuts-section { margin-top: 32px; padding-bottom: 40px; }
+.section-title {
+    font-size: 13px; color: #5F6368; font-weight: 500;
+    margin-bottom: 12px; padding-left: 4px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    display: flex; align-items: center; justify-content: space-between;
+}
+body.dark .section-title { color: #9AA0A6; }
+.edit-link {
+    color: #1A73E8; font-size: 12px; cursor: pointer;
+    text-transform: none; letter-spacing: 0;
+}
+body.dark .edit-link { color: #8AB4F8; }
+
+.shortcuts-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.shortcut {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 12px 8px; background: transparent;
+    border-radius: 12px; color: inherit; cursor: pointer;
+    border: none; font-family: inherit;
+    transition: background 0.2s;
+}
+.shortcut:hover, .shortcut:active { background: rgba(0, 0, 0, 0.04); }
+body.dark .shortcut:hover, body.dark .shortcut:active { background: rgba(255, 255, 255, 0.06); }
+.shortcut-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 20px; font-weight: bold;
+    margin-bottom: 8px; background: #5F6368;
+}
+.shortcut-name { font-size: 12px; text-align: center; }
+.edit-mode .shortcut { position: relative; }
+.edit-mode .shortcut::after {
+    content: '×'; position: absolute; top: 4px; right: 4px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #E53935; color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; line-height: 1;
+}
+.add-shortcut { border: 2px dashed #DADCE0; background: transparent; }
+body.dark .add-shortcut { border-color: #5F6368; }
+.add-shortcut-icon { background: transparent !important; border: 2px dashed #DADCE0; color: #5F6368 !important; }
+body.dark .add-shortcut-icon { border-color: #5F6368; color: #BDC1C6 !important; }
+
+/* 抽屉 */
+.drawer-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5); z-index: 200;
+    display: none; backdrop-filter: blur(2px);
+}
+.drawer-overlay.show { display: block; }
+.drawer {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: 300px; max-width: 85%;
+    background: #FFFFFF; z-index: 201;
+    transform: translateX(-100%); transition: transform 0.3s;
+    overflow-y: auto;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+body.dark .drawer { background: #2D2E30; }
+.drawer.show { transform: translateX(0); display: block; }
+.drawer-header {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid #F1F3F4;
+}
+body.dark .drawer-header { border-bottom-color: #3C4043; }
+.drawer-title { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+.drawer-subtitle { font-size: 12px; color: #5F6368; }
+body.dark .drawer-subtitle { color: #9AA0A6; }
+.drawer-section { padding: 12px 0; border-bottom: 1px solid #F1F3F4; }
+body.dark .drawer-section { border-bottom-color: #3C4043; }
+.drawer-item {
+    display: flex; align-items: center; gap: 16px;
+    padding: 12px 20px; color: inherit;
+    text-decoration: none; cursor: pointer;
+    background: transparent; border: none; width: 100%;
+    text-align: left; font-family: inherit; font-size: 15px;
+}
+.drawer-item:hover, .drawer-item:active { background: #F8F9FA; }
+body.dark .drawer-item:hover, body.dark .drawer-item:active { background: #3C4043; }
+.drawer-item-icon { width: 24px; height: 24px; color: #5F6368; }
+body.dark .drawer-item-icon { color: #BDC1C6; }
+.drawer-item-icon svg { width: 24px; height: 24px; fill: currentColor; }
+.drawer-item-label { flex: 1; }
+.drawer-item-counter {
+    background: #F1F3F4; color: #5F6368;
+    font-size: 11px; padding: 2px 8px; border-radius: 10px;
+}
+body.dark .drawer-item-counter { background: #3C4043; color: #BDC1C6; }
+
+/* 主题 */
+.theme-picker { display: flex; gap: 8px; padding: 8px 20px; }
+.theme-option {
+    flex: 1; padding: 8px;
+    border: 1px solid #DADCE0; border-radius: 8px;
+    background: transparent; cursor: pointer;
+    font-family: inherit; font-size: 12px; color: inherit;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.theme-option.active { border-color: #1A73E8; border-width: 2px; }
+.theme-color { width: 32px; height: 32px; border-radius: 6px; border: 1px solid rgba(0, 0, 0, 0.1); }
+
+/* 底部 */
+.footer { padding: 24px 16px; text-align: center; color: #5F6368; font-size: 12px; }
+body.dark .footer { color: #9AA0A6; }
+.footer a { color: inherit; text-decoration: none; }
+
+/* 搜索结果 (ice 自研) */
+.results { margin-top: 24px; }
+.result {
+    margin-bottom: 24px; padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+body.dark .result { border-bottom-color: rgba(255, 255, 255, 0.08); }
+.result-url {
+    font-size: 12px; color: #5F6368; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 6px;
+}
+body.dark .result-url { color: #9AA0A6; }
+.result-domain {
+    background: #1A73E8; color: white; font-size: 10px;
+    padding: 1px 6px; border-radius: 4px; font-weight: 500;
+}
+.result-title {
+    font-size: 18px; color: #1A0DAB;
+    text-decoration: none; font-weight: 400;
+    line-height: 1.3; display: block; margin-bottom: 4px;
+}
+body.dark .result-title { color: #8AB4F8; }
+.result-title:hover { text-decoration: underline; }
+.result-snippet {
+    font-size: 14px; color: #4D5156; line-height: 1.5;
+}
+body.dark .result-snippet { color: #BDC1C6; }
+.result-snippet mark { background: #FFEB3B; color: #202124; padding: 0 2px; }
+body.dark .result-snippet mark { background: #FFEB3B; color: #202124; }
+.result-actions { display: flex; gap: 8px; margin-top: 6px; }
+.result-action {
+    font-size: 12px; color: #1A73E8;
+    background: transparent; border: none; cursor: pointer;
+    padding: 4px 8px; border-radius: 4px;
+}
+.result-action:hover { background: #F1F3F4; }
+body.dark .result-action { color: #8AB4F8; }
+body.dark .result-action:hover { background: #3C4043; }
+
+/* 加载 */
+.loading { text-align: center; padding: 40px 16px; color: #5F6368; }
+body.dark .loading { color: #9AA0A6; }
+.spinner {
+    width: 24px; height: 24px;
+    border: 2px solid #E0E0E0;
+    border-top-color: #1A73E8;
+    border-radius: 50%; margin: 0 auto 12px;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 通知 */
+.toast {
+    position: fixed; bottom: 100px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(32, 33, 36, 0.95); color: white;
+    padding: 12px 20px; border-radius: 24px;
+    font-size: 14px; z-index: 300;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    max-width: 80%; text-align: center;
+}
+body.dark .toast { background: rgba(0, 0, 0, 0.9); }
+.toast.show { opacity: 1; }
+
+@media (max-width: 360px) {
+    .hero { padding: 32px 0 16px 0; }
+    .hero-title { font-size: 40px; }
+    .shortcuts-grid { grid-template-columns: repeat(3, 1fr); }
 }
 </style>
 </head>
 <body>
-<div class="header">
-    <div class="logo">i</div>
-    <div class="title">ice 浏览器</div>
-    <div class="subtitle">极简 · 快速 · 隐私</div>
-</div>
 
-<div class="search-box">
-    <input type="text" id="searchInput" placeholder="搜索或输入网址" autofocus>
-    <button onclick="doSearch()">搜索</button>
-</div>
-
-<div class="section">
-    <div class="section-title">常用网站</div>
-    <div class="shortcuts">
-        <a class="shortcut" href="https://www.bing.com">
-            <div class="shortcut-icon" style="background:#008373;color:white;font-weight:bold">B</div>
-            <div class="shortcut-name">Bing</div>
-        </a>
-        <a class="shortcut" href="https://www.baidu.com">
-            <div class="shortcut-icon" style="background:#2932E1;color:white;font-weight:bold">百</div>
-            <div class="shortcut-name">百度</div>
-        </a>
-        <a class="shortcut" href="https://www.wikipedia.org">
-            <div class="shortcut-icon" style="background:#000;color:white;font-weight:bold">W</div>
-            <div class="shortcut-name">维基</div>
-        </a>
-        <a class="shortcut" href="https://github.com">
-            <div class="shortcut-icon" style="background:#24292E;color:white;font-weight:bold">G</div>
-            <div class="shortcut-name">GitHub</div>
-        </a>
-        <a class="shortcut" href="https://www.youtube.com">
-            <div class="shortcut-icon" style="background:#FF0000;color:white;font-weight:bold">Y</div>
-            <div class="shortcut-name">YouTube</div>
-        </a>
-        <a class="shortcut" href="https://twitter.com">
-            <div class="shortcut-icon" style="background:#1DA1F2;color:white;font-weight:bold">X</div>
-            <div class="shortcut-name">X</div>
-        </a>
-        <a class="shortcut" href="https://www.reddit.com">
-            <div class="shortcut-icon" style="background:#FF4500;color:white;font-weight:bold">R</div>
-            <div class="shortcut-name">Reddit</div>
-        </a>
-        <a class="shortcut" href="https://news.ycombinator.com">
-            <div class="shortcut-icon" style="background:#FF6600;color:white;font-weight:bold">H</div>
-            <div class="shortcut-name">HN</div>
-        </a>
+<!-- 顶部条 -->
+<div class="top-bar">
+    <div class="logo" onclick="toggleDrawer()">
+        <div class="logo-icon">i</div>
+        <span>ice</span>
+        <span class="tab-count" id="tab_count">1</span>
+    </div>
+    <div class="top-actions">
+        <button class="icon-btn" onclick="toggleTheme()" title="切换主题">
+            <svg viewBox="0 0 24 24"><path d="M12,18V6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,15.31L23.31,12L20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31Z"/></svg>
+        </button>
+        <button class="icon-btn" onclick="openTranslate()" title="翻译">
+            <svg viewBox="0 0 24 24"><path d="M12.87,15.07L10.33,12.56L10.36,12.53C12.1,10.59 13.34,8.36 14.07,6H17V4H10V2H8V4H1V6H12.17C11.5,7.92 10.44,9.75 9,11.35C8.07,10.32 7.3,9.19 6.69,8H4.5C5.3,9.5 6.27,10.91 7.41,12.18L2.5,17.04L4,18.5L9,13.5L12.5,17L12.87,15.07M18.5,10H16.5L12,22H14L15.12,19H19.87L21,22H23L18.5,10M15.88,17L17.5,12.67L19.12,17H15.88Z"/></svg>
+        </button>
     </div>
 </div>
 
-<div class="section">
-    <div class="section-title">功能</div>
-    <div class="shortcuts">
-        <a class="shortcut" href="javascript:window.IceJsBridge.onReaderArticle('书签', '查看和管理你的书签')">
-            <div class="shortcut-icon" style="background:#1A73E8;color:white">★</div>
-            <div class="shortcut-name">书签</div>
-        </a>
-        <a class="shortcut" href="javascript:window.IceJsBridge.onReaderArticle('历史', '查看浏览历史')">
-            <div class="shortcut-icon" style="background:#34A853;color:white">⌚</div>
-            <div class="shortcut-name">历史</div>
-        </a>
-        <a class="shortcut" href="javascript:window.IceJsBridge.onReaderArticle('下载', '查看下载文件')">
-            <div class="shortcut-icon" style="background:#FBBC04;color:white">↓</div>
-            <div class="shortcut-name">下载</div>
-        </a>
-        <a class="shortcut" href="javascript:window.IceJsBridge.onReaderArticle('设置', '调整浏览器设置')">
-            <div class="shortcut-icon" style="background:#EA4335;color:white">⚙</div>
-            <div class="shortcut-name">设置</div>
-        </a>
+<!-- 主体 -->
+<div class="main">
+    <div class="hero" id="hero">
+        <div class="hero-title">ice</div>
+        <div class="hero-tagline">纯净 · 快速 · 自研搜索引擎</div>
+    </div>
+
+    <!-- 搜索框 -->
+    <div class="search-container">
+        <form class="search-box" id="searchForm" onsubmit="return doSearch(event)">
+            <div class="engine-icon" id="engineIcon">i</div>
+            <input type="text" class="search-input" id="searchInput"
+                   placeholder="搜索或输入网址..." autocomplete="off"
+                   autocorrect="off" autocapitalize="off" spellcheck="false"
+                   oninput="onSearchInput()" onfocus="showSuggestions()">
+            <button type="submit" class="search-btn" id="searchBtn">搜索</button>
+        </form>
+        <div class="suggestions" id="suggestions"></div>
+    </div>
+
+    <!-- 引擎切换 -->
+    <div class="engine-tabs" id="engineTabs"></div>
+
+    <!-- 搜索结果 -->
+    <div class="results" id="results"></div>
+
+    <!-- 快捷方式 -->
+    <div class="shortcuts-section" id="shortcutsSection">
+        <div class="section-title">
+            <span>常用网站</span>
+            <span class="edit-link" id="edit_link" onclick="toggleEditMode()">编辑</span>
+        </div>
+        <div class="shortcuts-grid" id="shortcutsGrid"></div>
+    </div>
+
+    <div class="footer">
+        <div>ice 浏览器 v4.0.0</div>
+        <div>纯 Java · 零依赖 · 自研 ice 搜索引擎</div>
     </div>
 </div>
 
-<div class="section">
-    <div class="section-title">关于</div>
-    <div class="news">
-        <div class="news-title">ice 浏览器 v1.0.0</div>
-        <div class="news-desc">一款极简但功能强大的 Android 浏览器。纯 Java 实现，零第三方依赖，APK 仅 150KB。内置广告拦截、阅读模式、后台下载等功能。</div>
+<!-- 抽屉菜单 -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+    <div class="drawer-header">
+        <div class="drawer-title">ice 浏览器</div>
+        <div class="drawer-subtitle">v4.0.0 · 真多 WebView · 自研搜索</div>
+    </div>
+    <div class="drawer-section">
+        <button class="drawer-item" onclick="newTab()">
+            <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M10,20V14H4V10H10V4H14V10H20V14H14V20H10Z"/></svg></div>
+            <div class="drawer-item-label">新建标签</div>
+        </button>
+        <button class="drawer-item" onclick="newIncognitoTab()">
+            <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M12,2A9,9 0 0,0 3,11H1L4.89,14.89L4.96,15.03L9,11H6A7,7 0 0,1 12,5A7,7 0 0,1 19,12H19.93L20.94,13.07L21,12A9,9 0 0,0 12,2M12,7V13L15.28,15.54L16,14.12L13.5,12.07V7H12Z"/></svg></div>
+            <div class="drawer-item-label">无痕标签</div>
+        </button>
+        <button class="drawer-item" onclick="showTabs()">
+            <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M3,3H10V10H3V3M14,3H21V10H14V3M3,14H10V21H3V14M14,14H21V21H14V14Z"/></svg></div>
+            <div class="drawer-item-label">标签页</div>
+            <div class="drawer-item-counter" id="tab_count_drawer">1</div>
+        </button>
+    </div>
+    <div class="drawer-section">
+        <div class="section-title">导航</div>
+        <button class="drawer-item" onclick="iceNav('file:///android_asset/bookmarks.html')">
+            <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M17,3H7C5.89,3 5,3.9 5,5V21L12,18L19,21V5C19,3.9 18.11,3 17,3Z"/></svg></div>
+            <div class="drawer-item-label">书签</div>
+        </button>
+        <button class="drawer-item" onclick="iceNav('file:///android_asset/history.html')">
+            <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M13,3A9,9 0 0,0 4,12H1L4.89,15.89L4.96,16.03L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3M12,8V13L16.28,15.54L17,14.12L13.5,12.07V8H12Z"/></svg></div>
+            <div class="drawer-item-label">历史记录</div>
+        </button>
+        <button class="drawer-item" onclick="iceNav('file:///android_asset/downloads.html')">
+            <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/></svg></div>
+            <div class="drawer-item-label">下载</div>
+        </button>
+    </div>
+    <div class="drawer-section">
+        <div class="section-title">外观</div>
+        <div class="theme-picker">
+            <button class="theme-option" data-theme="light" onclick="setTheme('light')">
+                <div class="theme-color" style="background:#FFFFFF"></div>浅色
+            </button>
+            <button class="theme-option" data-theme="dark" onclick="setTheme('dark')">
+                <div class="theme-color" style="background:#202124"></div>深色
+            </button>
+            <button class="theme-option" data-theme="sepia" onclick="setTheme('sepia')">
+                <div class="theme-color" style="background:#F4ECD8"></div>护眼
+            </button>
+            <button class="theme-option" data-theme="contrast" onclick="setTheme('contrast')">
+                <div class="theme-color" style="background:#000000"></div>黑白
+            </button>
+        </div>
+    </div>
+    <div class="drawer-section">
+        <div class="section-title">工具</div>
+        <button class="drawer-item" onclick="showTranslate()">
+            <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M12.87,15.07L10.33,12.56L10.36,12.53C12.1,10.59 13.34,8.36 14.07,6H17V4H10V2H8V4H1V6H12.17C11.5,7.92 10.44,9.75 9,11.35C8.07,10.32 7.3,9.19 6.69,8H4.5C5.3,9.5 6.27,10.91 7.41,12.18L2.5,17.04L4,18.5L9,13.5L12.5,17L12.87,15.07M18.5,10H16.5L12,22H14L15.12,19H19.87L21,22H23L18.5,10M15.88,17L17.5,12.67L19.12,17H15.88Z"/></svg></div>
+            <div class="drawer-item-label">翻译</div>
+        </button>
+        <button class="drawer-item" onclick="findInPage()">
+            <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C7,12 7,12 7.44,13.27L9.5,15C10.59,15 11.65,14.61 12.46,13.95L12.85,13.06L13.06,12.85L13.95,12.46C14.61,11.65 15,10.59 15,9.5C15,7 13,5 9.5,5Z"/></svg></div>
+            <div class="drawer-item-label">页面查找</div>
+        </button>
+        <button class="drawer-item" onclick="addBookmark()">
+            <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg></div>
+            <div class="drawer-item-label">添加书签</div>
+        </button>
+        <button class="drawer-item" onclick="enterReaderMode()">
+            <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M4,6H2V20A2,2 0 0,0 4,22H18V20H4V6M20,2H8A2,2 0 0,0 6,4V16A2,2 0 0,0 8,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M20,16H8V4H20V16Z"/></svg></div>
+            <div class="drawer-item-label">阅读模式</div>
+        </button>
+        <button class="drawer-item" onclick="toggleDesktop()">
+            <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M21,4H3A2,2 0 0,0 1,6V18A2,2 0 0,0 3,20H21A2,2 0 0,0 23,18V6A2,2 0 0,0 21,4M21,18H3V6H21V18Z"/></svg></div>
+            <div class="drawer-item-label">桌面版</div>
+        </button>
+        <button class="drawer-item" onclick="sharePage()">
+            <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19A2.92,2.92 0 0,0 15.08,19C15.08,20.61 16.39,21.92 18,21.92A2.92,2.92 0 0,0 21,19A2.92,2.92 0 0,0 18,16.08Z"/></svg></div>
+            <div class="drawer-item-label">分享</div>
+        </button>
+        <button class="drawer-item" onclick="openSettings()">
+            <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97L21.54,9.37C21.66,9.13 21.62,8.91 21.45,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.55,8.73C2.39,8.91 2.35,9.13 2.46,9.37L4.57,12.97L2.46,16.63C2.35,16.87 2.39,17.09 2.55,17.27L4.34,20.73C4.46,20.95 4.73,21.03 4.95,20.95L7.44,19.95C7.96,20.34 8.5,20.68 9.13,20.93L9.5,23.58C9.54,23.82 9.75,24 10,24H14C14.25,24 14.46,23.82 14.5,23.58L14.87,20.93C15.5,20.67 16.04,20.34 16.56,19.94L19.05,20.95C19.27,21.03 19.54,20.95 19.66,20.73L21.45,17.27C21.62,17.09 21.66,16.87 21.54,16.63L19.43,12.97Z"/></svg></div>
+            <div class="drawer-item-label">设置</div>
+        </button>
+        <button class="drawer-item" onclick="showAbout()">
+            <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg></div>
+            <div class="drawer-item-label">关于</div>
+        </button>
     </div>
 </div>
 
-<div class="footer">
-    Made with ❄ by ice-wocker
-</div>
+<!-- 通知 -->
+<div class="toast" id="toast"></div>
+
+<!-- 隐藏的 find bar (通过 btn 触发) -->
+<div id="__ice_find_container" style="display:none"></div>
 
 <script>
-function doSearch() {
-    var q = document.getElementById('searchInput').value.trim();
-    if (q) {
-        window.location.href = 'https://www.bing.com/search?q=' + encodeURIComponent(q);
+// === 状态 ===
+const state = {
+    theme: localStorage.getItem('ice_theme') || 'auto',
+    editMode: false,
+    shortcuts: JSON.parse(localStorage.getItem('ice_shortcuts') || 'null') || [
+        { name: 'Bing', url: 'https://www.bing.com', icon: 'B', color: '#008373' },
+        { name: '百度', url: 'https://www.baidu.com', icon: '百', color: '#2932E1' },
+        { name: 'GitHub', url: 'https://github.com', icon: 'G', color: '#24292E' },
+        { name: '知乎', url: 'https://www.zhihu.com', icon: '知', color: '#0084FF' },
+        { name: 'B站', url: 'https://www.bilibili.com', icon: 'B', color: '#FB7299' },
+        { name: '微博', url: 'https://weibo.com', icon: '微', color: '#E6162D' },
+        { name: 'YouTube', url: 'https://www.youtube.com', icon: 'Y', color: '#FF0000' },
+        { name: '淘宝', url: 'https://www.taobao.com', icon: '淘', color: '#FF4200' }
+    ]
+};
+
+const engines = {
+    ice: { name: 'ice', icon: 'i', color: '#1A73E8' },
+    bing: { name: 'Bing', icon: 'B', color: '#008373' },
+    google: { name: 'Google', icon: 'G', color: '#4285F4' },
+    duckduckgo: { name: 'DDG', icon: 'D', color: '#DE5833' },
+    baidu: { name: '百度', icon: '百', color: '#2932E1' },
+    sogou: { name: '搜狗', icon: 'S', color: '#FF6F00' }
+};
+
+let currentEngine = 'ice';
+let lastQuery = '';
+let searchId = 0;
+let debounceTimer = null;
+let callbackCounter = 0;
+const callbacks = {};
+
+// === 主题 ===
+function applyTheme() {
+    const t = state.theme === 'auto' ? getAutoTheme() : state.theme;
+    document.body.classList.remove('dark', 'sepia', 'contrast');
+    if (t === 'dark') document.body.classList.add('dark');
+    else if (t === 'sepia') document.body.classList.add('sepia');
+    else if (t === 'contrast') document.body.classList.add('contrast');
+    localStorage.setItem('ice_theme', state.theme);
+    document.querySelectorAll('.theme-option').forEach(b => {
+        b.classList.toggle('active', b.dataset.theme === state.theme);
+    });
+}
+
+function getAutoTheme() {
+    if (window.IceJsBridge && window.IceJsBridge.getCurrentTheme) {
+        return window.IceJsBridge.getCurrentTheme();
+    }
+    return 'light';
+}
+
+function setTheme(theme) {
+    state.theme = theme;
+    applyTheme();
+    showToast('主题已切换');
+}
+
+function toggleTheme() {
+    const themes = ['light', 'dark', 'sepia', 'contrast'];
+    const idx = themes.indexOf(state.theme);
+    setTheme(themes[(idx + 1) % themes.length]);
+}
+
+// === 引擎 ===
+function setEngine(name) {
+    if (!engines[name]) return;
+    currentEngine = name;
+    renderEngines();
+    const e = engines[name];
+    document.getElementById('engineIcon').textContent = e.icon;
+    document.getElementById('engineIcon').style.background = e.color;
+}
+
+function renderEngines() {
+    const tabs = document.getElementById('engineTabs');
+    if (!tabs) return;
+    tabs.innerHTML = '';
+    Object.entries(engines).forEach(([key, e]) => {
+        const btn = document.createElement('button');
+        btn.className = 'engine-tab' + (key === currentEngine ? ' active' : '');
+        btn.textContent = e.name;
+        btn.onclick = () => setEngine(key);
+        tabs.appendChild(btn);
+    });
+}
+
+// === 搜索 ===
+function doSearch(event) {
+    if (event) event.preventDefault();
+    const input = document.getElementById('searchInput');
+    const query = input.value.trim();
+    if (!query) return false;
+    
+    hideSuggestions();
+    
+    if (isUrl(query)) {
+        let url = normalizeUrl(query);
+        if (window.IceJsBridge) window.IceJsBridge.loadUrl(url);
+        else window.location.href = url;
+    } else {
+        if (currentEngine === 'ice') {
+            doIceSearch(query);
+        } else {
+            const searchUrl = getExternalSearchUrl(currentEngine, query);
+            if (window.IceJsBridge) window.IceJsBridge.loadUrl(searchUrl);
+            else window.location.href = searchUrl;
+        }
+    }
+    return false;
+}
+
+function getExternalSearchUrl(engine, query) {
+    const enc = encodeURIComponent(query);
+    if (engine === 'bing') return 'https://www.bing.com/search?q=' + enc;
+    if (engine === 'google') return 'https://www.google.com/search?q=' + enc;
+    if (engine === 'duckduckgo') return 'https://duckduckgo.com/?q=' + enc;
+    if (engine === 'baidu') return 'https://www.baidu.com/s?wd=' + enc;
+    if (engine === 'sogou') return 'https://www.sogou.com/web?query=' + enc;
+    return 'https://www.bing.com/search?q=' + enc;
+}
+
+function isUrl(text) {
+    return /^[\\w-]+(\\.[\\w-]+)+/.test(text) && !/\s/.test(text);
+}
+
+function normalizeUrl(input) {
+    return /^https?:\/\//i.test(input) ? input : 'https://' + input;
+}
+
+// === ice 搜索: 走 Java 端真实实现 ===
+function doIceSearch(query) {
+    const results = document.getElementById('results');
+    const hero = document.getElementById('hero');
+    const shortcutsSection = document.getElementById('shortcutsSection');
+    
+    if (lastQuery === query && results.dataset.cached === '1') {
+        // 缓存
+    } else {
+        results.innerHTML = '<div class="loading"><div class="spinner"></div>ice 搜索中...</div>';
+    }
+    if (hero) hero.style.display = 'none';
+    if (shortcutsSection) shortcutsSection.style.display = 'none';
+    
+    lastQuery = query;
+    const cbId = 'cb_' + (++callbackCounter);
+    callbacks[cbId] = function(json) {
+        try {
+            const data = JSON.parse(json);
+            if (data.error) {
+                results.innerHTML = '<div class="loading">搜索失败: ' + escape(data.error) + '</div>';
+                return;
+            }
+            if (!data.results || data.results.length === 0) {
+                results.innerHTML = '<div class="loading">未找到结果</div>';
+                return;
+            }
+            results.dataset.cached = '1';
+            let html = '<div style="font-size:13px;color:#5F6368;margin-bottom:16px">ice 搜索为您找到约 ' + data.total + ' 条结果</div>';
+            data.results.forEach(r => {
+                html += '<div class="result">' +
+                    '<div class="result-url"><span class="result-domain">' + escape(r.domain || '') + '</span>' + escape(r.url) + '</div>' +
+                    '<a class="result-title" href="javascript:iceNav(\'' + escape(r.url) + '\')">' + r.title + '</a>' +
+                    '<div class="result-snippet">' + r.snippet + '</div>' +
+                    '<div class="result-actions">' +
+                    '<button class="result-action" onclick="iceNav(\'' + escape(r.url) + '\')">打开</button>' +
+                    '<button class="result-action" onclick="openInNewTab(\'' + escape(r.url) + '\')">新标签打开</button>' +
+                    '</div></div>';
+            });
+            results.innerHTML = html;
+        } catch (e) {
+            results.innerHTML = '<div class="loading">解析失败</div>';
+        }
+    };
+    
+    if (window.IceJsBridge) {
+        window.IceJsBridge.search(query, cbId);
+    } else {
+        results.innerHTML = '<div class="loading">ice 搜索需要 ice 浏览器</div>';
     }
 }
-document.getElementById('searchInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') doSearch();
+
+window.iceOnSearchResults = function(json, cbId) {
+    const cb = callbacks[cbId];
+    if (cb) {
+        cb(json);
+        delete callbacks[cbId];
+    }
+};
+
+// === 建议 ===
+function onSearchInput() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => requestSuggestions(document.getElementById('searchInput').value), 150);
+}
+
+function requestSuggestions(prefix) {
+    const cbId = 'sug_' + (++callbackCounter);
+    callbacks[cbId] = function(json) {
+        try {
+            const list = JSON.parse(json);
+            renderSuggestions(list);
+        } catch (e) {}
+    };
+    if (window.IceJsBridge) {
+        window.IceJsBridge.getSuggestions(prefix || '', cbId);
+    } else {
+        renderSuggestions([]);
+    }
+}
+
+window.iceOnSuggestions = function(json, cbId) {
+    const cb = callbacks[cbId];
+    if (cb) {
+        cb(json);
+        delete callbacks[cbId];
+    }
+};
+
+function renderSuggestions(list) {
+    const sug = document.getElementById('suggestions');
+    if (!sug) return;
+    
+    if (!list || list.length === 0) {
+        sug.classList.remove('show');
+        return;
+    }
+    
+    let html = '';
+    list.forEach(s => {
+        const isUrl = /^[\\w-]+\\./.test(s);
+        html += '<div class="suggestion-item" onclick="pickSuggestion(\'' + escape(s) + '\')">' +
+            '<div class="suggestion-icon">' + (isUrl ?
+                '<svg viewBox="0 0 24 24"><path d="M3.9,12C3.9,10.29 5.29,8.9 7,8.9H11V7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H11V15.1H7C5.29,15.1 3.9,13.71 3.9,12M8,13H16V11H8V13M17,7H13V8.9H17A3.1,3.1 0 0,1 20.1,12A3.1,3.1 0 0,1 17,15.1H13V17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7Z"/></svg>' :
+                '<svg viewBox="0 0 24 24"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C7,12 7,12 7.44,13.27L9.5,15C10.59,15 11.65,14.61 12.46,13.95L12.85,13.06L13.06,12.85L13.95,12.46C14.61,11.65 15,10.59 15,9.5C15,7 13,5 9.5,5Z"/></svg>') + '</div>' +
+            '<div class="suggestion-text">' + highlight(s, document.getElementById('searchInput').value) + '</div>' +
+            (isUrl ? '<div class="suggestion-type">网址</div>' : '') +
+            '</div>';
+    });
+    sug.innerHTML = html;
+    sug.classList.add('show');
+}
+
+function highlight(text, query) {
+    if (!query) return escape(text);
+    const idx = text.toLowerCase().indexOf(query.toLowerCase());
+    if (idx === -1) return escape(text);
+    return escape(text.substring(0, idx)) + '<mark>' + escape(text.substring(idx, idx + query.length)) + '</mark>' + escape(text.substring(idx + query.length));
+}
+
+function pickSuggestion(text) {
+    const input = document.getElementById('searchInput');
+    input.value = text;
+    hideSuggestions();
+    doSearch();
+}
+
+function showSuggestions() {
+    requestSuggestions(document.getElementById('searchInput').value);
+}
+
+function hideSuggestions() {
+    const sug = document.getElementById('suggestions');
+    if (sug) sug.classList.remove('show');
+}
+
+document.addEventListener('click', e => {
+    if (!e.target.closest('.search-container')) hideSuggestions();
 });
+
+// === 快捷方式 ===
+function renderShortcuts() {
+    const grid = document.getElementById('shortcutsGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    state.shortcuts.slice(0, 8).forEach((s, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'shortcut' + (state.editMode ? ' edit-mode' : '');
+        btn.onclick = () => {
+            if (state.editMode) {
+                state.shortcuts.splice(i, 1);
+                localStorage.setItem('ice_shortcuts', JSON.stringify(state.shortcuts));
+                renderShortcuts();
+            } else {
+                iceNav(s.url);
+            }
+        };
+        btn.innerHTML = '<div class="shortcut-icon" style="background:' + s.color + '">' + s.icon + '</div>' +
+            '<div class="shortcut-name">' + escape(s.name) + '</div>';
+        grid.appendChild(btn);
+    });
+    // 添加
+    const add = document.createElement('button');
+    add.className = 'shortcut add-shortcut';
+    add.onclick = addShortcut;
+    add.innerHTML = '<div class="shortcut-icon add-shortcut-icon">+</div><div class="shortcut-name">添加</div>';
+    grid.appendChild(add);
+}
+
+function toggleEditMode() {
+    state.editMode = !state.editMode;
+    const el = document.getElementById('edit_link');
+    if (el) el.textContent = state.editMode ? '完成' : '编辑';
+    renderShortcuts();
+    showToast(state.editMode ? '点击移除, 点 + 添加' : '已退出编辑');
+}
+
+function addShortcut() {
+    const url = prompt('网址 (例: example.com)');
+    if (!url) return;
+    const name = prompt('名称', url.replace(/^https?:\/\//, '').split('/')[0]) || '新网站';
+    const color = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+    const icon = name.charAt(0).toUpperCase();
+    state.shortcuts.unshift({ name, url: normalizeUrl(url), icon, color });
+    if (state.shortcuts.length > 8) state.shortcuts = state.shortcuts.slice(0, 8);
+    localStorage.setItem('ice_shortcuts', JSON.stringify(state.shortcuts));
+    renderShortcuts();
+}
+
+// === 抽屉 ===
+function toggleDrawer() {
+    document.getElementById('drawer').classList.toggle('show');
+    document.getElementById('drawerOverlay').classList.toggle('show');
+}
+
+function closeDrawer() {
+    document.getElementById('drawer').classList.remove('show');
+    document.getElementById('drawerOverlay').classList.remove('show');
+}
+
+// === Tab 操作 (走 JS Bridge) ===
+function newTab() {
+    if (window.IceJsBridge) window.IceJsBridge.newTab('about:blank');
+    closeDrawer();
+}
+
+function newIncognitoTab() {
+    if (window.IceJsBridge) window.IceJsBridge.newTab('about:blank?incognito');
+    closeDrawer();
+}
+
+function showTabs() {
+    if (window.IceJsBridge) window.IceJsBridge.showTabs();
+    closeDrawer();
+}
+
+function openInNewTab(url) {
+    if (window.IceJsBridge) window.IceJsBridge.newTab(url);
+}
+
+// === 工具 ===
+function iceNav(url) {
+    if (window.IceJsBridge) window.IceJsBridge.loadUrl(url);
+    else window.location.href = url;
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+function escape(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+}
+
+// === 菜单动作 ===
+function addBookmark() {
+    if (window.IceJsBridge) {
+        window.IceJsBridge.addBookmark();
+    }
+    closeDrawer();
+}
+
+function sharePage() {
+    if (window.IceJsBridge) {
+        window.IceJsBridge.share();
+    }
+    closeDrawer();
+}
+
+function enterReaderMode() {
+    if (window.IceJsBridge) {
+        window.IceJsBridge.loadUrl('javascript:void(0)');  // 先停当前
+    }
+    setTimeout(() => {
+        const script = "(function(){" +
+            "var a=document.querySelector('article')||document.querySelector('main')||document.body;" +
+            "var t=document.title;var text=a?a.innerText:document.body.innerText;" +
+            "var html='<html><head><meta charset=\"utf-8\"><style>body{font-size:18px;line-height:1.7;padding:30px;max-width:720px;margin:0 auto;font-family:sans-serif;color:#222}h1{font-size:26px;margin-bottom:20px;color:#1A73E8}</style></head><body><h1>'+t+'</h1><div>'+text.replace(/\\n/g,'<br>')+'</div></body></html>';" +
+            "document.write(html);})()";
+        if (window.IceJsBridge) {
+            window.IceJsBridge.loadUrl('javascript:' + encodeURIComponent(script));
+        }
+    }, 100);
+    closeDrawer();
+}
+
+function toggleDesktop() {
+    if (window.IceJsBridge) {
+        const newUrl = window.location.href;
+        // 切换 UA 通过 reload 实现 (实际由 MainActivity 处理)
+        if (window.IceJsBridge.showToast) {
+            window.IceJsBridge.showToast('已切换桌面版');
+        }
+    }
+    closeDrawer();
+}
+
+function findInPage() {
+    if (window.IceJsBridge) {
+        // 注入 find UI
+        if (window.IceJsBridge.loadUrl) {
+            const js = "(function(){var b=document.createElement('div');b.id='__ice_f';b.style.cssText='position:fixed;top:0;left:0;right:0;height:48px;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;padding:0 8px;gap:8px;color:white';b.innerHTML='<input id=\"__ice_fi\" style=\"flex:1;height:36px;padding:0 12px;border-radius:18px;border:none;background:rgba(255,255,255,0.2);color:white;font-size:14px\" placeholder=\"查找\"/><span id=\"__ice_fc\" style=\"font-size:13px;min-width:48px;text-align:center\">0</span><button onclick=\"document.getElementById(\\'__ice_f\\').remove()\" style=\"background:transparent;color:white;border:none;padding:8px;font-size:18px\">×</button>';document.body.appendChild(b);var i=document.getElementById('__ice_fi');i.focus();i.oninput=function(){if(window.find){window.find(this.value);}var c=document.getElementById('__ice_fc');c.textContent=this.value?'已输入':0;};})()";
+            window.IceJsBridge.loadUrl('javascript:' + encodeURIComponent(js));
+        }
+    }
+    closeDrawer();
+}
+
+function openTranslate() {
+    const text = prompt('输入要翻译的文本:');
+    if (!text) return;
+    if (window.IceJsBridge) {
+        // 跳到 Bing 翻译
+        window.IceJsBridge.loadUrl('https://www.bing.com/translator/?text=' + encodeURIComponent(text));
+    }
+    closeDrawer();
+}
+
+function openSettings() {
+    if (window.IceJsBridge) window.IceJsBridge.openSettings();
+    closeDrawer();
+}
+
+function showAbout() {
+    if (window.IceJsBridge) window.IceJsBridge.loadUrl('file:///android_asset/about.html');
+    closeDrawer();
+}
+
+function updateTabCount(n) {
+    const el = document.getElementById('tab_count');
+    if (el) el.textContent = n;
+    const el2 = document.getElementById('tab_count_drawer');
+    if (el2) el2.textContent = n;
+}
+
+// === 启动 ===
+renderEngines();
+renderShortcuts();
+applyTheme();
+updateTabCount(window.IceJsBridge ? window.IceJsBridge.getTabCount() : 1);
 </script>
+
 </body>
 </html>
