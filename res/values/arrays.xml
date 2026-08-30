@@ -1,0 +1,40 @@
+<resources>
+    <string-array name="theme_entries">
+        <item>跟随系统</item>
+        <item>浅色</item>
+        <item>深色</item>
+        <item>纯黑</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>auto</item>
+        <item>light</item>
+        <item>dark</item>
+        <item>amoled</item>
+    </string-array>
+
+    <string-array name="search_engine_entries">
+        <item>Bing</item>
+        <item>Google</item>
+        <item>DuckDuckGo</item>
+        <item>百度</item>
+        <item>搜狗</item>
+    </string-array>
+    <string-array name="search_engine_values">
+        <item>Bing</item>
+        <item>Google</item>
+        <item>DuckDuckGo</item>
+        <item>百度</item>
+        <item>搜狗</item>
+    </string-array>
+
+    <string-array name="user_agent_entries">
+        <item>默认</item>
+        <item>桌面版</item>
+        <item>移动版</item>
+    </string-array>
+    <string-array name="user_agent_values">
+        <item>default</item>
+        <item>desktop</item>
+        <item>mobile</item>
+    </string-array>
+</resources>

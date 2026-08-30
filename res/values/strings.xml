@@ -1,0 +1,142 @@
+<resources>
+    <string name="app_name">ice浏览器</string>
+    
+    <!-- General -->
+    <string name="search_or_url">搜索或输入网址</string>
+    <string name="loading">加载中...</string>
+    <string name="error">错误</string>
+    <string name="retry">重试</string>
+    <string name="cancel">取消</string>
+    <string name="ok">确定</string>
+    <string name="done">完成</string>
+    <string name="save">保存</string>
+    <string name="delete">删除</string>
+    <string name="edit">编辑</string>
+    <string name="share">分享</string>
+    <string name="copy">复制</string>
+    <string name="open_in_new_tab">在新标签打开</string>
+    <string name="close_tab">关闭标签</string>
+    <string name="new_tab">新标签</string>
+    <string name="close_all_tabs">关闭所有标签</string>
+    
+    <!-- Toolbar -->
+    <string name="back">后退</string>
+    <string name="forward">前进</string>
+    <string name="refresh">刷新</string>
+    <string name="home">主页</string>
+    <string name="menu">菜单</string>
+    <string name="tabs">标签页</string>
+    
+    <!-- Menu items -->
+    <string name="bookmarks">书签</string>
+    <string name="history">历史</string>
+    <string name="downloads">下载</string>
+    <string name="settings">设置</string>
+    <string name="add_bookmark">添加书签</string>
+    <string name="find_in_page">页面查找</string>
+    <string name="request_desktop">请求桌面版</string>
+    <string name="reader_mode">阅读模式</string>
+    <string name="save_page">保存页面</string>
+    <string name="share_page">分享页面</string>
+    <string name="print">打印</string>
+    <string name="about">关于</string>
+    
+    <!-- Settings -->
+    <string name="settings_general">常规</string>
+    <string name="settings_privacy">隐私</string>
+    <string name="settings_appearance">外观</string>
+    <string name="settings_advanced">高级</string>
+    <string name="settings_search_engine">搜索引擎</string>
+    <string name="settings_homepage">主页</string>
+    <string name="settings_block_ads">拦截广告</string>
+    <string name="settings_block_trackers">拦截追踪器</string>
+    <string name="settings_java_script">JavaScript</string>
+    <string name="settings_cookies">Cookie</string>
+    <string name="settings_clear_data">清除数据</string>
+    <string name="settings_theme">主题</string>
+    <string name="settings_font_size">字体大小</string>
+    <string name="settings_user_agent">User Agent</string>
+    <string name="settings_download_path">下载路径</string>
+    <string name="settings_default_search">默认搜索</string>
+    <string name="settings_open_links_in_new_tab">链接在新标签打开</string>
+    <string name="settings_pull_to_refresh">下拉刷新</string>
+    <string name="settings_swipe_to_navigate">滑动导航</string>
+    
+    <!-- Search engines -->
+    <string name="search_bing">Bing</string>
+    <string name="search_google">Google</string>
+    <string name="search_duckduckgo">DuckDuckGo</string>
+    <string name="search_baidu">百度</string>
+    <string name="search_sogou">搜狗</string>
+    
+    <!-- Themes -->
+    <string name="theme_system">跟随系统</string>
+    <string name="theme_light">浅色</string>
+    <string name="theme_dark">深色</string>
+    <string name="theme_amoled">纯黑</string>
+    
+    <!-- Downloads -->
+    <string name="download_started">下载已开始</string>
+    <string name="download_completed">下载完成</string>
+    <string name="download_failed">下载失败</string>
+    <string name="download_paused">已暂停</string>
+    <string name="downloading">下载中...</string>
+    <string name="no_downloads">暂无下载记录</string>
+    
+    <!-- Bookmarks -->
+    <string name="bookmark_added">书签已添加</string>
+    <string name="bookmark_removed">书签已移除</string>
+    <string name="no_bookmarks">暂无书签</string>
+    <string name="bookmark_title">标题</string>
+    <string name="bookmark_url">网址</string>
+    <string name="bookmark_folder">文件夹</string>
+    
+    <!-- History -->
+    <string name="history_today">今天</string>
+    <string name="history_yesterday">昨天</string>
+    <string name="history_older">更早</string>
+    <string name="clear_history">清除历史</string>
+    <string name="no_history">暂无历史记录</string>
+    
+    <!-- Missing strings from compile errors -->
+    <string name="share_link">分享链接</string>
+    <string name="copied">已复制</string>
+    <string name="load_error">加载失败</string>
+    <string name="select_file">选择文件</string>
+    <string name="duplicate_tab">复制标签</string>
+    <string name="edit_bookmark">编辑书签</string>
+    <string name="delete_bookmark">删除书签</string>
+    <string name="bookmark_deleted">书签已删除</string>
+    <string name="untitled">无标题</string>
+    <string name="clear_history_confirm">确定要清除所有历史记录吗？</string>
+    <string name="clear">清除</string>
+    <string name="delete_history_item">删除此条目</string>
+    <string name="deleted">已删除</string>
+    <string name="cannot_open_file">无法打开文件</string>
+    <string name="file_not_found">文件未找到</string>
+    <string name="open_file">打开文件</string>
+    <string name="delete_download">删除下载</string>
+    <string name="open">打开</string>
+    <string name="pause">暂停</string>
+    <string name="download_pending">等待中</string>
+    
+    <!-- Errors -->
+    <string name="err_connection_failed">连接失败</string>
+    <string name="err_timeout">连接超时</string>
+    <string name="err_dns_failed">DNS解析失败</string>
+    <string name="err_ssl_failed">SSL错误</string>
+    <string name="err_unknown">未知错误</string>
+    <string name="err_file_not_found">文件未找到</string>
+    <string name="err_permission_denied">权限被拒绝</string>
+    
+    <!-- Content descriptions for accessibility -->
+    <string name="cd_back">后退按钮</string>
+    <string name="cd_forward">前进按钮</string>
+    <string name="cd_refresh">刷新按钮</string>
+    <string name="cd_home">主页按钮</string>
+    <string name="cd_menu">菜单按钮</string>
+    <string name="cd_tabs">标签页按钮</string>
+    <string name="cd_url_bar">地址栏</string>
+    <string name="cd_close_tab">关闭标签</string>
+    <string name="cd_new_tab">新建标签</string>
+</resources>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ice 浏览器</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #FFFFFF;
+    color: #212121;
+    padding: 24px;
+    min-height: 100vh;
+}
+.header {
+    text-align: center;
+    padding: 32px 0 24px;
+}
+.logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    background: linear-gradient(135deg, #1A73E8 0%, #4285F4 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 48px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+}
+.title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1A73E8;
+    margin-bottom: 8px;
+}
+.subtitle {
+    font-size: 14px;
+    color: #757575;
+}
+.search-box {
+    margin: 32px 0;
+    background: #F1F3F4;
+    border-radius: 24px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.search-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #212121;
+}
+.search-box button {
+    background: #1A73E8;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.section {
+    margin: 24px 0;
+}
+.section-title {
+    font-size: 13px;
+    color: #757575;
+    margin-bottom: 12px;
+    padding-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.shortcuts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.shortcut {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #212121;
+    padding: 8px;
+    border-radius: 12px;
+    transition: background 0.2s;
+}
+.shortcut:active {
+    background: #F1F3F4;
+}
+.shortcut-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    background: #F1F3F4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 6px;
+}
+.shortcut-name {
+    font-size: 11px;
+    text-align: center;
+}
+.news {
+    background: #FFFFFF;
+    border: 1px solid #E8EAED;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+.news-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1A73E8;
+    margin-bottom: 6px;
+    text-decoration: none;
+    display: block;
+}
+.news-desc {
+    font-size: 13px;
+    color: #5F6368;
+    line-height: 1.5;
+}
+.footer {
+    text-align: center;
+    margin: 32px 0 16px;
+    color: #9AA0A6;
+    font-size: 11px;
+}
+</style>
+</head>
+<body>
+<div class="header">
+    <div class="logo">i</div>
+    <div class="title">ice 浏览器</div>
+    <div class="subtitle">极简 · 快速 · 隐私</div>
+</div>
+
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="搜索或输入网址" autofocus>
+    <button onclick="doSearch()">搜索</button>
+</div>
+
+<div class="section">
+    <div class="section-title">常用网站</div>
+    <div class="shortcuts">
+        <a class="shortcut" href="https://www.bing.com">
+            <div class="shortcut-icon" style="background:#008373;color:white;font-weight:bold">B</div>
+            <div class="shortcut-name">Bing</div>
+        </a>
+        <a class="shortcut" href="https://www.baidu.com">
+            <div class="shortcut-icon" style="background:#2932E1;color:white;font-weight:bold">百</div>
+            <div class="shortcut-name">百度</div>
+        </a>
+        <a class="shortcut" href="https://www.wikipedia.org">
+            <div class="shortcut-icon" style="background:#000;color:white;font-weight:bold">W</div>
+            <div class="shortcut-name">维基</div>
+        </a>
+        <a class="shortcut" href="https://github.com">
+            <div class="shortcut-icon" style="background:#24292E;color:white;font-weight:bold">G</div>
+            <div class="shortcut-name">GitHub</div>
+        </a>
+        <a class="shortcut" href="https://www.youtube.com">
+            <div class="shortcut-icon" style="background:#FF0000;color:white;font-weight:bold">Y</div>
+            <div class="shortcut-name">YouTube</div>
+        </a>
+        <a class="shortcut" href="https://twitter.com">
+            <div class="shortcut-icon" style="background:#1DA1F2;color:white;font-weight:bold">X</div>
+            <div class="shortcut-name">X</div>
+        </a>
+        <a class="shortcut" href="https://www.reddit.com">
+            <div class="shortcut-icon" style="background:#FF4500;color:white;font-weight:bold">R</div>
+            <div class="shortcut-name">Reddit</div>
+        </a>
+        <a class="shortcut" href="https://news.ycombinator.com">
+            <div class="shortcut-icon" style="background:#FF6600;color:white;font-weight:bold">H</div>
+            <div class="shortcut-name">HN</div>
+        </a>
+    </div>
+</div>
+
+<div class="section">
+    <div class="section-title">功能</div>
+    <div class="shortcuts">
+        <a class="shortcut" href="javascript:window.IceJsBridge.onReaderArticle('书签', '查看和管理你的书签')">
+            <div class="shortcut-icon" style="background:#1A73E8;color:white">★</div>
+            <div class="shortcut-name">书签</div>
+        </a>
+        <a class="shortcut" href="javascript:window.IceJsBridge.onReaderArticle('历史', '查看浏览历史')">
+            <div class="shortcut-icon" style="background:#34A853;color:white">⌚</div>
+            <div class="shortcut-name">历史</div>
+        </a>
+        <a class="shortcut" href="javascript:window.IceJsBridge.onReaderArticle('下载', '查看下载文件')">
+            <div class="shortcut-icon" style="background:#FBBC04;color:white">↓</div>
+            <div class="shortcut-name">下载</div>
+        </a>
+        <a class="shortcut" href="javascript:window.IceJsBridge.onReaderArticle('设置', '调整浏览器设置')">
+            <div class="shortcut-icon" style="background:#EA4335;color:white">⚙</div>
+            <div class="shortcut-name">设置</div>
+        </a>
+    </div>
+</div>
+
+<div class="section">
+    <div class="section-title">关于</div>
+    <div class="news">
+        <div class="news-title">ice 浏览器 v1.0.0</div>
+        <div class="news-desc">一款极简但功能强大的 Android 浏览器。纯 Java 实现，零第三方依赖，APK 仅 150KB。内置广告拦截、阅读模式、后台下载等功能。</div>
+    </div>
+</div>
+
+<div class="footer">
+    Made with ❄ by ice-wocker
+</div>
+
+<script>
+function doSearch() {
+    var q = document.getElementById('searchInput').value.trim();
+    if (q) {
+        window.location.href = 'https://www.bing.com/search?q=' + encodeURIComponent(q);
+    }
+}
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doSearch();
+});
+</script>
+</body>
+</html>

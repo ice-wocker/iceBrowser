@@ -1,0 +1,109 @@
+<resources>
+    <!-- Base theme - Light -->
+    <style name="Theme.IceBrowser" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:statusBarColor">@color/status_bar_light</item>
+        <item name="android:navigationBarColor">@color/nav_bar_light</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+
+    <!-- Dark theme -->
+    <style name="Theme.IceBrowser.Dark" parent="android:Theme.Material.NoActionBar">
+        <item name="android:colorPrimary">@color/colorPrimaryDarkTheme</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkDarkTheme</item>
+        <item name="android:colorAccent">@color/colorAccentDarkTheme</item>
+        <item name="android:colorBackground">@color/colorBackgroundDark</item>
+        <item name="android:windowBackground">@color/colorBackgroundDark</item>
+        <item name="android:statusBarColor">@color/status_bar_dark</item>
+        <item name="android:navigationBarColor">@color/nav_bar_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+
+    <!-- Amoled theme (pure black) -->
+    <style name="Theme.IceBrowser.Amoled" parent="android:Theme.Material.NoActionBar">
+        <item name="android:colorPrimary">@color/colorPrimaryDarkTheme</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkDarkTheme</item>
+        <item name="android:colorAccent">@color/colorAccentDarkTheme</item>
+        <item name="android:colorBackground">@color/colorBackgroundAmoled</item>
+        <item name="android:windowBackground">@color/colorBackgroundAmoled</item>
+        <item name="android:statusBarColor">@color/status_bar_amoled</item>
+        <item name="android:navigationBarColor">@color/nav_bar_amoled</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+
+    <!-- Settings theme -->
+    <style name="Theme.IceBrowser.Settings" parent="Theme.IceBrowser">
+        <item name="android:windowBackground">@color/colorBackground</item>
+    </style>
+
+    <style name="Theme.IceBrowser.Settings.Dark" parent="Theme.IceBrowser.Dark">
+        <item name="android:windowBackground">@color/colorBackgroundDark</item>
+    </style>
+
+    <style name="Theme.IceBrowser.Settings.Amoled" parent="Theme.IceBrowser.Amoled">
+        <item name="android:windowBackground">@color/colorBackgroundAmoled</item>
+    </style>
+
+    <!-- Toolbar style -->
+    <style name="Widget.IceBrowser.Toolbar" parent="android:Widget.Material.Toolbar">
+        <item name="android:background">@color/toolbar_bg_light</item>
+        <item name="android:minHeight">?android:attr/actionBarSize</item>
+    </style>
+
+    <style name="Widget.IceBrowser.Toolbar.Dark" parent="android:Widget.Material.Toolbar">
+        <item name="android:background">@color/toolbar_bg_dark</item>
+        <item name="android:minHeight">?android:attr/actionBarSize</item>
+    </style>
+
+    <style name="Widget.IceBrowser.Toolbar.Amoled" parent="android:Widget.Material.Toolbar">
+        <item name="android:background">@color/toolbar_bg_amoled</item>
+        <item name="android:minHeight">?android:attr/actionBarSize</item>
+    </style>
+
+    <!-- Progress bar -->
+    <style name="Widget.IceBrowser.ProgressBar" parent="android:Widget.Material.ProgressBar.Horizontal">
+        <item name="android:progressTint">@color/progress_color</item>
+        <item name="android:minHeight">2dp</item>
+        <item name="android:maxHeight">2dp</item>
+    </style>
+
+    <!-- Button styles -->
+    <style name="Widget.IceBrowser.Button.Primary" parent="android:Widget.Material.Button.Colored">
+        <item name="android:backgroundTint">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorOnPrimary</item>
+    </style>
+
+    <style name="Widget.IceBrowser.Button.Secondary" parent="android:Widget.Material.Button.Borderless">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <!-- Divider -->
+    <style name="Widget.IceBrowser.Divider" parent="android:Widget.Material.ListView.DropDown">
+        <item name="android:background">@color/menu_divider_light</item>
+    </style>
+
+    <style name="Widget.IceBrowser.Divider.Dark" parent="android:Widget.Material.ListView.DropDown">
+        <item name="android:background">@color/menu_divider_dark</item>
+    </style>
+
+    <style name="Widget.IceBrowser.Divider.Amoled" parent="android:Widget.Material.ListView.DropDown">
+        <item name="android:background">@color/menu_divider_amoled</item>
+    </style>
+
+    <!-- List item -->
+    <style name="Widget.IceBrowser.ListItem" parent="android:Widget.Material.ListView">
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingHorizontal">16dp</item>
+    </style>
+</resources>
