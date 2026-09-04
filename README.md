@@ -1,4 +1,12 @@
-# ice 浏览器 (ice Browser)
+<p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
+  <img src="https://img.shields.io/badge/Android-24%2B-green" alt="Android 24+">
+  <img src="https://img.shields.io/badge/Java-8-orange" alt="Java 8">
+  <img src="https://img.shields.io/badge/size-81KB-brightgreen" alt="81KB">
+  <img src="https://img.shields.io/badge/dependencies-0-success" alt="0 deps">
+  <img src="https://img.shields.io/github/stars/ice-wocker/iceBrowser?style=social" alt="Stars">
+</p>
+
 
 **v4.0 - 真正的浏览器 · 自研搜索引擎 · 单 dex 110KB · 零依赖**
 
