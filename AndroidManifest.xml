@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.icebrowser.app"
-    android:versionCode="2"
-    android:versionName="2.0.0">
+    android:versionCode="5"
+    android:versionName="5.0.0">
 
     <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="30" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- 下载统一落在应用私有外部目录，无需存储权限即可读写；
+         这两个权限仅为兼容 Android 9 及以下系统的 Downloads 目录展示。 -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <!-- 网页调用摄像头 / 麦克风（PermissionRequest）时需要，运行时按需申请 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
 
     <application
         android:name=".IceApp"
@@ -67,6 +77,18 @@
             android:name=".ReaderActivity"
             android:exported="false"
             android:label="阅读模式" />
+
+        <!--
+          自研只读 FileProvider：把下载好的文件以 content:// 授权给外部应用打开 / 分享。
+          Android 7.0 起再传 file:// 会抛 FileUriExposedException，必须走它。
+          路径映射在 IceFileProvider 内部完成（ext / files / cache 三个根目录），
+          因此不需要 meta-data 的 file_paths.xml。
+        -->
+        <provider
+            android:name=".IceFileProvider"
+            android:authorities="com.icebrowser.app.files"
+            android:exported="false"
+            android:grantUriPermissions="true" />
 
     </application>
 

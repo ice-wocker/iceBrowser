@@ -1,202 +1,330 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+  主界面布局。
+  所有颜色都走 ?attr/iceXxx，由 ThemeManager 选定的 4 套主题提供，
+  因此切换主题只需 recreate()，无需改动布局。
+  外层 FrameLayout 是为了让全屏视频容器能覆盖在工具栏之上。
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#FFFFFF">
+    android:background="?attr/iceToolbarBg">
 
-    <!-- 顶部栏 -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="#FFFFFF"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="4dp"
-        android:elevation="4dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/btn_back"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_arrow_back"
-            android:padding="8dp"
-            android:contentDescription="后退" />
+        <!-- ===================== 顶部工具栏 ===================== -->
+        <LinearLayout
+            android:id="@+id/top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?attr/iceToolbarBg"
+            android:elevation="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
 
-        <ImageButton
-            android:id="@+id/btn_forward"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_arrow_forward"
-            android:padding="8dp"
-            android:contentDescription="前进" />
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/back"
+                android:padding="8dp"
+                android:src="@drawable/ic_arrow_back"
+                android:tint="?attr/iceIconTint" />
 
-        <EditText
-            android:id="@+id/url_edit"
-            android:layout_width="0dp"
-            android:layout_height="36dp"
+            <ImageButton
+                android:id="@+id/btn_forward"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/forward"
+                android:padding="8dp"
+                android:src="@drawable/ic_arrow_forward"
+                android:tint="?attr/iceIconTint" />
+
+            <EditText
+                android:id="@+id/url_edit"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/url_bar_background"
+                android:hint="@string/search_or_url"
+                android:imeOptions="actionGo"
+                android:inputType="textUri"
+                android:maxLines="1"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:singleLine="true"
+                android:textColor="?attr/iceUrlBarFg"
+                android:textColorHint="?attr/iceSecondaryFg"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/btn_refresh"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/refresh"
+                android:padding="8dp"
+                android:src="@drawable/ic_refresh"
+                android:tint="?attr/iceIconTint" />
+
+            <ImageButton
+                android:id="@+id/btn_tabs"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/tabs"
+                android:padding="8dp"
+                android:src="@drawable/ic_tabs"
+                android:tint="?attr/iceIconTint" />
+
+            <ImageButton
+                android:id="@+id/btn_menu"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/menu"
+                android:padding="8dp"
+                android:src="@drawable/ic_menu"
+                android:tint="?attr/iceIconTint" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="@style/Widget.IceBrowser.ProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:max="100"
+            android:progress="0"
+            android:visibility="gone" />
+
+        <!-- ===================== WebView 容器（多 WebView 同位置叠放） ===================== -->
+        <com.icebrowser.app.IceSwipeLayout
+            android:id="@+id/web_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginHorizontal="4dp"
-            android:background="@drawable/url_bar_background"
-            android:hint="搜索或输入网址"
-            android:imeOptions="actionGo"
-            android:inputType="textUri"
-            android:maxLines="1"
-            android:paddingHorizontal="12dp"
-            android:textSize="14sp"
-            android:singleLine="true" />
+            android:background="?attr/iceWebViewBg" />
 
-        <ImageButton
-            android:id="@+id/btn_refresh"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_refresh"
-            android:padding="8dp"
-            android:contentDescription="刷新" />
+        <!-- ===================== 页内查找条 ===================== -->
+        <LinearLayout
+            android:id="@+id/find_bar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?attr/iceBarBg"
+            android:elevation="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:visibility="gone">
 
-        <ImageButton
-            android:id="@+id/btn_tabs"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_tabs"
-            android:padding="8dp"
-            android:contentDescription="标签页" />
+            <EditText
+                android:id="@+id/find_edit"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:background="@drawable/url_bar_background"
+                android:hint="@string/find_in_page"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:singleLine="true"
+                android:textColor="?attr/iceUrlBarFg"
+                android:textColorHint="?attr/iceSecondaryFg"
+                android:textSize="14sp" />
 
-        <ImageButton
-            android:id="@+id/btn_menu"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_menu"
-            android:padding="8dp"
-            android:contentDescription="菜单" />
+            <TextView
+                android:id="@+id/find_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="4dp"
+                android:minWidth="42dp"
+                android:gravity="center"
+                android:text="0/0"
+                android:textColor="?attr/iceBarFg"
+                android:textSize="12sp" />
+
+            <ImageButton
+                android:id="@+id/btn_find_prev"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="上一个"
+                android:padding="8dp"
+                android:src="@drawable/ic_arrow_up"
+                android:tint="?attr/iceIconTint" />
+
+            <ImageButton
+                android:id="@+id/btn_find_next"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="下一个"
+                android:padding="8dp"
+                android:src="@drawable/ic_arrow_down"
+                android:tint="?attr/iceIconTint" />
+
+            <ImageButton
+                android:id="@+id/btn_find_close"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cancel"
+                android:padding="8dp"
+                android:src="@drawable/ic_close"
+                android:tint="?attr/iceIconTint" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/iceDivider" />
+
+        <!-- ===================== 底栏：4 个入口 ===================== -->
+        <LinearLayout
+            android:id="@+id/bottom_bar"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="?attr/iceBarBg"
+            android:elevation="8dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/bottom_bookmarks"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="6dp"
+                    android:contentDescription="@string/bookmarks"
+                    android:src="@drawable/ic_bookmark"
+                    android:tint="?attr/iceIconTint" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/bookmarks"
+                    android:textColor="?attr/iceBarFg"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/bottom_history"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="6dp"
+                    android:contentDescription="@string/history"
+                    android:src="@drawable/ic_history"
+                    android:tint="?attr/iceIconTint" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/history"
+                    android:textColor="?attr/iceBarFg"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/bottom_downloads"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="6dp"
+                    android:contentDescription="@string/downloads"
+                    android:src="@drawable/ic_download"
+                    android:tint="?attr/iceIconTint" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/downloads"
+                    android:textColor="?attr/iceBarFg"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/bottom_settings"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="6dp"
+                    android:contentDescription="@string/settings"
+                    android:src="@drawable/ic_settings"
+                    android:tint="?attr/iceIconTint" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/settings"
+                    android:textColor="?attr/iceBarFg"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/progress"
-        style="?android:attr/progressBarStyleHorizontal"
+    <!-- ===================== 全屏视频容器（覆盖整屏） ===================== -->
+    <FrameLayout
+        android:id="@+id/fullscreen_container"
         android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:max="100"
-        android:progress="0"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
         android:visibility="gone" />
 
-    <!-- WebView 容器: 多 WebView 同位置, 切换显示/隐藏 -->
-    <FrameLayout
-        android:id="@+id/web_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <!-- 底栏: 4 个真按钮, 各跳到独立 Activity -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:background="#FFFFFF"
-        android:orientation="horizontal"
-        android:elevation="8dp">
-
-        <LinearLayout
-            android:id="@+id/bottom_bookmarks"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?android:attr/selectableItemBackground">
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_bookmark"
-                android:layout_marginTop="6dp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="书签"
-                android:textSize="10sp"
-                android:textColor="#5F6368"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/bottom_history"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?android:attr/selectableItemBackground">
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_history"
-                android:layout_marginTop="6dp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="历史"
-                android:textSize="10sp"
-                android:textColor="#5F6368"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/bottom_downloads"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?android:attr/selectableItemBackground">
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_download"
-                android:layout_marginTop="6dp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="下载"
-                android:textSize="10sp"
-                android:textColor="#5F6368"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/bottom_settings"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?android:attr/selectableItemBackground">
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_settings"
-                android:layout_marginTop="6dp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="设置"
-                android:textSize="10sp"
-                android:textColor="#5F6368"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-</LinearLayout>
+</FrameLayout>

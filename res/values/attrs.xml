@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      iceBrowser 自定义主题属性。
+      所有界面颜色都通过这组属性取值，配合 4 套主题（浅色 / 深色 / 纯黑 / 护眼）
+      实现运行时无刷新切换。布局与 drawable 里统一使用 ?attr/xxx 引用。
+    -->
+    <attr name="iceToolbarBg" format="color" />
+    <attr name="iceToolbarFg" format="color" />
+    <attr name="iceBarBg" format="color" />
+    <attr name="iceBarFg" format="color" />
+    <attr name="iceUrlBarBg" format="color" />
+    <attr name="iceUrlBarFg" format="color" />
+    <attr name="iceDivider" format="color" />
+    <attr name="iceCardBg" format="color" />
+    <attr name="iceIconTint" format="color" />
+    <attr name="iceAccent" format="color" />
+    <attr name="iceSecondaryFg" format="color" />
+    <attr name="iceProgress" format="color" />
+    <attr name="iceWebViewBg" format="color" />
+    <attr name="iceSelection" format="color" />
+    <attr name="iceBadgeBg" format="color" />
+</resources>

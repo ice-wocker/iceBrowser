@@ -1,109 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base theme - Light -->
+
+    <!--
+      4 套主题：浅色 / 深色 / 纯黑 / 护眼。
+      ThemeManager 在 Activity#setContentView 之前调用 setTheme()，
+      布局与 drawable 全部通过 ?attr/iceXxx 取值，因此切换主题只需 recreate。
+    -->
+
+    <!-- ===================== 浅色（默认） ===================== -->
     <style name="Theme.IceBrowser" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:colorPrimary">@color/colorPrimary</item>
         <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:colorAccent">@color/colorAccent</item>
         <item name="android:colorBackground">@color/colorBackground</item>
         <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:textColorPrimary">@color/colorOnBackground</item>
+        <item name="android:textColorSecondary">@color/colorOnSurfaceVariant</item>
+        <item name="android:textColorHint">@color/colorOnSurfaceVariant</item>
+        <item name="android:colorControlNormal">@color/colorOnSurfaceVariant</item>
+        <item name="android:colorControlActivated">@color/colorPrimary</item>
         <item name="android:statusBarColor">@color/status_bar_light</item>
         <item name="android:navigationBarColor">@color/nav_bar_light</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+
+        <item name="iceToolbarBg">@color/colorBackground</item>
+        <item name="iceToolbarFg">@color/colorOnBackground</item>
+        <item name="iceBarBg">@color/colorSurface</item>
+        <item name="iceBarFg">@color/colorOnSurfaceVariant</item>
+        <item name="iceUrlBarBg">@color/url_bar_bg_light</item>
+        <item name="iceUrlBarFg">@color/colorOnBackground</item>
+        <item name="iceDivider">@color/colorOutline</item>
+        <item name="iceCardBg">@color/colorSurface</item>
+        <item name="iceIconTint">@color/colorOnSurfaceVariant</item>
+        <item name="iceAccent">@color/colorPrimary</item>
+        <item name="iceSecondaryFg">@color/colorOnSurfaceVariant</item>
+        <item name="iceProgress">@color/colorPrimary</item>
+        <item name="iceWebViewBg">@color/webview_bg_light</item>
+        <item name="iceSelection">@color/selection_highlight</item>
+        <item name="iceBadgeBg">@color/colorSurfaceVariant</item>
     </style>
 
-    <!-- Dark theme -->
+    <!-- ===================== 深色 ===================== -->
     <style name="Theme.IceBrowser.Dark" parent="android:Theme.Material.NoActionBar">
         <item name="android:colorPrimary">@color/colorPrimaryDarkTheme</item>
         <item name="android:colorPrimaryDark">@color/colorPrimaryDarkDarkTheme</item>
         <item name="android:colorAccent">@color/colorAccentDarkTheme</item>
         <item name="android:colorBackground">@color/colorBackgroundDark</item>
         <item name="android:windowBackground">@color/colorBackgroundDark</item>
+        <item name="android:textColorPrimary">@color/colorOnBackgroundDark</item>
+        <item name="android:textColorSecondary">@color/colorOnSurfaceVariantDark</item>
+        <item name="android:textColorHint">@color/colorOnSurfaceVariantDark</item>
+        <item name="android:colorControlNormal">@color/colorOnSurfaceVariantDark</item>
+        <item name="android:colorControlActivated">@color/colorPrimaryDarkTheme</item>
         <item name="android:statusBarColor">@color/status_bar_dark</item>
         <item name="android:navigationBarColor">@color/nav_bar_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+
+        <item name="iceToolbarBg">@color/colorBackgroundDark</item>
+        <item name="iceToolbarFg">@color/colorOnBackgroundDark</item>
+        <item name="iceBarBg">@color/colorSurfaceDark</item>
+        <item name="iceBarFg">@color/colorOnSurfaceVariantDark</item>
+        <item name="iceUrlBarBg">@color/url_bar_bg_dark</item>
+        <item name="iceUrlBarFg">@color/colorOnBackgroundDark</item>
+        <item name="iceDivider">@color/colorOutlineDark</item>
+        <item name="iceCardBg">@color/colorSurfaceDark</item>
+        <item name="iceIconTint">@color/colorOnSurfaceVariantDark</item>
+        <item name="iceAccent">@color/colorPrimaryDarkTheme</item>
+        <item name="iceSecondaryFg">@color/colorOnSurfaceVariantDark</item>
+        <item name="iceProgress">@color/colorPrimaryDarkTheme</item>
+        <item name="iceWebViewBg">@color/webview_bg_dark</item>
+        <item name="iceSelection">@color/selection_highlight_dark</item>
+        <item name="iceBadgeBg">@color/colorSurfaceVariantDark</item>
     </style>
 
-    <!-- Amoled theme (pure black) -->
+    <!-- ===================== 纯黑（AMOLED） ===================== -->
     <style name="Theme.IceBrowser.Amoled" parent="android:Theme.Material.NoActionBar">
-        <item name="android:colorPrimary">@color/colorPrimaryDarkTheme</item>
-        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkDarkTheme</item>
-        <item name="android:colorAccent">@color/colorAccentDarkTheme</item>
+        <item name="android:colorPrimary">@color/colorPrimaryAmoled</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkAmoled</item>
+        <item name="android:colorAccent">@color/colorAccentAmoled</item>
         <item name="android:colorBackground">@color/colorBackgroundAmoled</item>
         <item name="android:windowBackground">@color/colorBackgroundAmoled</item>
-        <item name="android:statusBarColor">@color/status_bar_amoled</item>
-        <item name="android:navigationBarColor">@color/nav_bar_amoled</item>
+        <item name="android:textColorPrimary">@color/colorOnBackgroundAmoled</item>
+        <item name="android:textColorSecondary">@color/colorOnSurfaceVariantAmoled</item>
+        <item name="android:textColorHint">@color/colorOnSurfaceVariantAmoled</item>
+        <item name="android:colorControlNormal">@color/colorOnSurfaceVariantAmoled</item>
+        <item name="android:colorControlActivated">@color/colorPrimaryAmoled</item>
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:navigationBarColor">@color/black</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+
+        <item name="iceToolbarBg">@color/colorBackgroundAmoled</item>
+        <item name="iceToolbarFg">@color/colorOnBackgroundAmoled</item>
+        <item name="iceBarBg">@color/black</item>
+        <item name="iceBarFg">@color/colorOnSurfaceVariantAmoled</item>
+        <item name="iceUrlBarBg">@color/url_bar_bg_amoled</item>
+        <item name="iceUrlBarFg">@color/colorOnBackgroundAmoled</item>
+        <item name="iceDivider">@color/colorOutlineAmoled</item>
+        <item name="iceCardBg">@color/colorSurfaceAmoled</item>
+        <item name="iceIconTint">@color/colorOnSurfaceVariantAmoled</item>
+        <item name="iceAccent">@color/colorPrimaryAmoled</item>
+        <item name="iceSecondaryFg">@color/colorOnSurfaceVariantAmoled</item>
+        <item name="iceProgress">@color/colorPrimaryAmoled</item>
+        <item name="iceWebViewBg">@color/webview_bg_amoled</item>
+        <item name="iceSelection">@color/selection_highlight_dark</item>
+        <item name="iceBadgeBg">@color/colorSurfaceVariantAmoled</item>
     </style>
 
-    <!-- Settings theme -->
-    <style name="Theme.IceBrowser.Settings" parent="Theme.IceBrowser">
-        <item name="android:windowBackground">@color/colorBackground</item>
+    <!-- ===================== 护眼 Sepia ===================== -->
+    <style name="Theme.IceBrowser.Sepia" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">@color/colorPrimarySepia</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkSepia</item>
+        <item name="android:colorAccent">@color/colorAccentSepia</item>
+        <item name="android:colorBackground">@color/colorBackgroundSepia</item>
+        <item name="android:windowBackground">@color/colorBackgroundSepia</item>
+        <item name="android:textColorPrimary">@color/colorOnBackgroundSepia</item>
+        <item name="android:textColorSecondary">@color/colorOnSurfaceVariantSepia</item>
+        <item name="android:textColorHint">@color/colorOnSurfaceVariantSepia</item>
+        <item name="android:colorControlNormal">@color/colorOnSurfaceVariantSepia</item>
+        <item name="android:colorControlActivated">@color/colorPrimarySepia</item>
+        <item name="android:statusBarColor">@color/colorBackgroundSepia</item>
+        <item name="android:navigationBarColor">@color/colorBackgroundSepia</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+
+        <item name="iceToolbarBg">@color/colorBackgroundSepia</item>
+        <item name="iceToolbarFg">@color/colorOnBackgroundSepia</item>
+        <item name="iceBarBg">@color/colorSurfaceSepia</item>
+        <item name="iceBarFg">@color/colorOnSurfaceVariantSepia</item>
+        <item name="iceUrlBarBg">@color/url_bar_bg_sepia</item>
+        <item name="iceUrlBarFg">@color/colorOnBackgroundSepia</item>
+        <item name="iceDivider">@color/colorOutlineSepia</item>
+        <item name="iceCardBg">@color/colorSurfaceSepia</item>
+        <item name="iceIconTint">@color/colorOnSurfaceVariantSepia</item>
+        <item name="iceAccent">@color/colorPrimarySepia</item>
+        <item name="iceSecondaryFg">@color/colorOnSurfaceVariantSepia</item>
+        <item name="iceProgress">@color/colorPrimarySepia</item>
+        <item name="iceWebViewBg">@color/webview_bg_sepia</item>
+        <item name="iceSelection">@color/selection_highlight</item>
+        <item name="iceBadgeBg">@color/colorSurfaceVariantSepia</item>
     </style>
 
-    <style name="Theme.IceBrowser.Settings.Dark" parent="Theme.IceBrowser.Dark">
-        <item name="android:windowBackground">@color/colorBackgroundDark</item>
-    </style>
-
-    <style name="Theme.IceBrowser.Settings.Amoled" parent="Theme.IceBrowser.Amoled">
-        <item name="android:windowBackground">@color/colorBackgroundAmoled</item>
-    </style>
-
-    <!-- Toolbar style -->
-    <style name="Widget.IceBrowser.Toolbar" parent="android:Widget.Material.Toolbar">
-        <item name="android:background">@color/toolbar_bg_light</item>
-        <item name="android:minHeight">?android:attr/actionBarSize</item>
-    </style>
-
-    <style name="Widget.IceBrowser.Toolbar.Dark" parent="android:Widget.Material.Toolbar">
-        <item name="android:background">@color/toolbar_bg_dark</item>
-        <item name="android:minHeight">?android:attr/actionBarSize</item>
-    </style>
-
-    <style name="Widget.IceBrowser.Toolbar.Amoled" parent="android:Widget.Material.Toolbar">
-        <item name="android:background">@color/toolbar_bg_amoled</item>
-        <item name="android:minHeight">?android:attr/actionBarSize</item>
-    </style>
-
-    <!-- Progress bar -->
+    <!-- 进度条 -->
     <style name="Widget.IceBrowser.ProgressBar" parent="android:Widget.Material.ProgressBar.Horizontal">
-        <item name="android:progressTint">@color/progress_color</item>
-        <item name="android:minHeight">2dp</item>
-        <item name="android:maxHeight">2dp</item>
+        <item name="android:progressTint">?attr/iceProgress</item>
+        <item name="android:minHeight">3dp</item>
+        <item name="android:maxHeight">3dp</item>
     </style>
 
-    <!-- Button styles -->
-    <style name="Widget.IceBrowser.Button.Primary" parent="android:Widget.Material.Button.Colored">
-        <item name="android:backgroundTint">@color/colorPrimary</item>
-        <item name="android:textColor">@color/colorOnPrimary</item>
-    </style>
-
-    <style name="Widget.IceBrowser.Button.Secondary" parent="android:Widget.Material.Button.Borderless">
-        <item name="android:textColor">@color/colorPrimary</item>
-    </style>
-
-    <!-- Divider -->
-    <style name="Widget.IceBrowser.Divider" parent="android:Widget.Material.ListView.DropDown">
-        <item name="android:background">@color/menu_divider_light</item>
-    </style>
-
-    <style name="Widget.IceBrowser.Divider.Dark" parent="android:Widget.Material.ListView.DropDown">
-        <item name="android:background">@color/menu_divider_dark</item>
-    </style>
-
-    <style name="Widget.IceBrowser.Divider.Amoled" parent="android:Widget.Material.ListView.DropDown">
-        <item name="android:background">@color/menu_divider_amoled</item>
-    </style>
-
-    <!-- List item -->
-    <style name="Widget.IceBrowser.ListItem" parent="android:Widget.Material.ListView">
+    <!-- 列表行 -->
+    <style name="Widget.IceBrowser.ListItem">
         <item name="android:background">?android:attr/selectableItemBackground</item>
-        <item name="android:minHeight">48dp</item>
-        <item name="android:paddingHorizontal">16dp</item>
+        <item name="android:minHeight">56dp</item>
     </style>
+
 </resources>

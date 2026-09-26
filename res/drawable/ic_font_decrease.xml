@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 正文行 -->
+    <path android:fillColor="#202124" android:pathData="M2,5h14v2H2z" />
+    <path android:fillColor="#202124" android:pathData="M2,10h10v2H2z" />
+    <path android:fillColor="#202124" android:pathData="M2,15h13v2H2z" />
+    <!-- 减号 -->
+    <path android:fillColor="#202124" android:pathData="M16,12.5h6v2h-6z" />
+</vector>

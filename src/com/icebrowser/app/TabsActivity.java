@@ -4,10 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,14 +26,23 @@ public class TabsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tabs);
-        
+        try {
+            ThemeManager.applyTo(this);
+            setContentView(R.layout.activity_tabs);
+        } catch (Throwable t) {
+            android.util.Log.e("Tabs", "onCreate", t);
+            finish();
+            return;
+        }
+
         tabManager = MainActivity.staticTabsManager;
         if (tabManager == null) {
             finish();
             return;
         }
-        
+        // 先刷新全部缩略图，保证卡片里显示的是切走时抓的真实画面
+        try { tabManager.captureAllThumbnails(); } catch (Exception ignored) {}
+
         gridView = (GridView) findViewById(R.id.tabs_grid);
         if (gridView != null) {
             gridView.setAdapter(new TabsAdapter());
@@ -121,17 +126,19 @@ public class TabsActivity extends Activity {
             title.setText(tab.title != null ? tab.title : "新标签页");
             url.setText(tab.url != null ? tab.url : "");
             
-            // 缩略图
-            if (tab.webView != null) {
-                tab.webView.setDrawingCacheEnabled(true);
-                Bitmap cache = tab.webView.getDrawingCache();
-                if (cache != null) {
-                    Bitmap scaled = scaleBitmap(cache, 480, 800);
-                    thumb.setImageBitmap(scaled);
-                } else {
-                    thumb.setImageResource(R.drawable.ic_globe);
-                }
+            // 缩略图：优先用 TabsManager 在切走时抓取的真实画面
+            Bitmap thumbBmp = tab.thumbnail;
+            if ((thumbBmp == null || thumbBmp.isRecycled()) && position == tabManager.getCurrentIndex()) {
+                tabManager.captureThumbnail(tab);
+                thumbBmp = tab.thumbnail;
+            }
+            if (thumbBmp != null && !thumbBmp.isRecycled()) {
+                thumb.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                thumb.clearColorFilter();
+                thumb.setImageBitmap(thumbBmp);
             } else {
+                thumb.setScaleType(ImageView.ScaleType.CENTER);
+                thumb.setColorFilter(attrColor(R.attr.iceIconTint));
                 thumb.setImageResource(R.drawable.ic_globe);
             }
             
@@ -182,17 +189,12 @@ public class TabsActivity extends Activity {
             
             return convertView;
         }
-        
-        private Bitmap scaleBitmap(Bitmap src, int maxW, int maxH) {
-            if (src == null) return null;
-            int w = src.getWidth();
-            int h = src.getHeight();
-            if (w <= maxW && h <= maxH) return src;
-            float scale = Math.min((float) maxW / w, (float) maxH / h);
-            int nw = (int) (w * scale);
-            int nh = (int) (h * scale);
-            Bitmap result = Bitmap.createScaledBitmap(src, nw, nh, true);
-            return result;
-        }
+    }
+
+    /** 从当前主题取颜色，用于给占位图标着色。 */
+    private int attrColor(int attr) {
+        android.util.TypedValue tv = new android.util.TypedValue();
+        if (getTheme().resolveAttribute(attr, tv, true)) return tv.data;
+        return 0xFF5F6368;
     }
 }
