@@ -212,4 +212,40 @@ public final class DownloadService {
             db.close();
         }
     }
+
+    /**
+     * 清空全部下载：取消系统任务、删除已下载的文件、清空数据库记录。
+     * 供设置页「清除浏览数据 → 下载记录与文件」使用。
+     */
+    public static void removeAll(Context context) {
+        DatabaseHelper db = new DatabaseHelper(context);
+        try {
+            List<DatabaseHelper.DownloadItem> items = db.getDownloads();
+            DownloadManager dm =
+                    (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+            for (DatabaseHelper.DownloadItem d : items) {
+                if (d.dmId > 0 && dm != null) {
+                    try {
+                        dm.remove(d.dmId);
+                    } catch (Exception ignored) {
+                    }
+                }
+                if (d.filePath != null) {
+                    try {
+                        File f = new File(d.filePath);
+                        if (f.exists()) {
+                            //noinspection ResultOfMethodCallIgnored
+                            f.delete();
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+            db.deleteDownloadsAll();
+        } catch (Exception e) {
+            android.util.Log.e("IceDownload", "removeAll", e);
+        } finally {
+            db.close();
+        }
+    }
 }
