@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 历史 / 书签 / 下载 通用列表行：主标题 + 次要说明 -->
+<!-- 注意：行根布局不能加 android:clickable / android:focusable，
+     否则行自己会消费掉触摸事件，外层 ListView 的 setOnItemClickListener /
+     setOnItemLongClickListener 永远不触发，表现为「整页点了没反应」。
+     按压反馈由上面的 selectableItemBackground 提供。 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground"
     android:minHeight="64dp"
-    android:clickable="true"
-    android:focusable="true"
     android:gravity="center_vertical"
     android:orientation="vertical"
     android:paddingStart="16dp"
