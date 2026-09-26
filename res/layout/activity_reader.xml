@@ -1,64 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  阅读模式。
+  顶栏与正文底色都跟随主题：深色 / 纯黑 / 护眼切换后正文也会同步换色。
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#FFFFFF">
+    android:background="?attr/iceWebViewBg"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="#FFFFFF"
-        android:orientation="horizontal"
+        android:background="?attr/iceToolbarBg"
+        android:elevation="4dp"
         android:gravity="center_vertical"
-        android:paddingHorizontal="4dp"
-        android:elevation="4dp">
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
 
         <ImageButton
             android:id="@+id/btn_back"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="@string/back"
             android:padding="8dp"
-            android:contentDescription="返回" />
+            android:src="@drawable/ic_arrow_back"
+            android:tint="?attr/iceIconTint" />
 
         <TextView
             android:id="@+id/reader_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:layout_marginHorizontal="8dp"
-            android:text="阅读模式"
-            android:textSize="16sp"
-            android:textColor="#212121"
+            android:ellipsize="end"
             android:singleLine="true"
-            android:ellipsize="end" />
+            android:text="@string/reader_mode"
+            android:textColor="?attr/iceToolbarFg"
+            android:textSize="16sp" />
 
         <ImageButton
             android:id="@+id/btn_font_down"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="@string/font_decrease"
             android:padding="6dp"
-            android:contentDescription="减小字体" />
+            android:src="@drawable/ic_font_decrease"
+            android:tint="?attr/iceIconTint" />
 
         <ImageButton
             android:id="@+id/btn_font_up"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_arrow_forward"
+            android:contentDescription="@string/font_increase"
             android:padding="6dp"
-            android:contentDescription="增大字体" />
+            android:src="@drawable/ic_font_increase"
+            android:tint="?attr/iceIconTint" />
 
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/iceDivider" />
 
     <WebView
         android:id="@+id/reader_web"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:background="?attr/iceWebViewBg" />
 
 </LinearLayout>

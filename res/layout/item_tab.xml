@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  单个标签卡片。
+  背景由 TabsActivity 在选中 / 未选中之间切换 tab_active_bg / tab_bg，
+  两者都已改为 ?attr/iceXxx，因此会跟随主题。
+-->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="280dp"
@@ -16,35 +21,39 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="8dp"
-            android:gravity="center_vertical">
+            android:padding="8dp">
 
             <ImageView
                 android:id="@+id/tab_favicon"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/ic_globe" />
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/ic_globe"
+                android:tint="?attr/iceIconTint" />
 
             <TextView
                 android:id="@+id/tab_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="6dp"
-                android:textSize="13sp"
-                android:textColor="#212121"
-                android:maxLines="1"
+                android:layout_weight="1"
                 android:ellipsize="end"
-                android:text="新标签页" />
+                android:maxLines="1"
+                android:text="@string/new_tab"
+                android:textColor="?attr/iceToolbarFg"
+                android:textSize="13sp" />
 
             <ImageButton
                 android:id="@+id/tab_close"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/close_tab"
+                android:padding="6dp"
                 android:src="@drawable/ic_close"
-                android:padding="6dp" />
+                android:tint="?attr/iceIconTint" />
 
         </LinearLayout>
 
@@ -53,22 +62,21 @@
             android:id="@+id/tab_thumb"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             android:layout_margin="8dp"
-            android:scaleType="centerCrop"
-            android:background="#F8F9FA" />
+            android:layout_weight="1"
+            android:background="?attr/iceBadgeBg"
+            android:scaleType="centerCrop" />
 
         <!-- URL -->
         <TextView
             android:id="@+id/tab_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="6dp"
-            android:textSize="11sp"
-            android:textColor="#757575"
-            android:maxLines="1"
             android:ellipsize="end"
-            android:text="about:home" />
+            android:maxLines="1"
+            android:padding="6dp"
+            android:textColor="?attr/iceSecondaryFg"
+            android:textSize="11sp" />
 
     </LinearLayout>
 
@@ -78,7 +86,7 @@
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:layout_gravity="bottom"
-        android:background="#1A73E8"
+        android:background="?attr/iceAccent"
         android:visibility="gone" />
 
 </FrameLayout>

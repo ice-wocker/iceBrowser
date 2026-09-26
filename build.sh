@@ -14,8 +14,14 @@ WORK=build
 rm -rf $WORK
 mkdir -p $WORK/{gen,classes,dex}
 
-echo "=== 1. AAPT: 生成 R.java 和打包资源 ==="
-$AAPT package -f -m -J $WORK/gen -M AndroidManifest.xml -S res -I "$ANDROID_JAR" -F $WORK/res.zip
+echo "=== 1. AAPT: 生成 R.java 并打包资源(含 assets) ==="
+# -A assets 会把 assets/ 下的全部文件(主页 home.html、广告规则 adblock.txt 等)
+# 一起打进 APK，避免只打包单个文件导致运行期读不到资源。
+AAPT_EXTRA=""
+if [ -d assets ]; then
+    AAPT_EXTRA="-A assets"
+fi
+$AAPT package -f -m -J $WORK/gen -M AndroidManifest.xml -S res -I "$ANDROID_JAR" $AAPT_EXTRA -F $WORK/res.zip
 
 echo "=== 2. ECJ: 编译 Java 源码 ==="
 SRC=$(find src -name '*.java')
@@ -29,9 +35,6 @@ $DX --dex --output=$WORK/dex/classes.dex $WORK/classes
 echo "=== 4. 打包 APK ==="
 cp $WORK/res.zip app-unsigned.apk
 (cd $WORK/dex && zip -q -j ../../app-unsigned.apk classes.dex)
-if [ -d assets ] && [ "$(ls -A assets 2>/dev/null)" ]; then
-    $AAPT add app-unsigned.apk "assets/home.html" 2>&1 || true
-fi
 
 echo "=== 5. ZIPALIGN 对齐 ==="
 $ZIPALIGN -f 4 app-unsigned.apk app-aligned.apk

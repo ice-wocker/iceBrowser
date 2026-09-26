@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1A73E8" id="themeColorMeta">
+<title>翻译 · ice 浏览器</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+/* ===== 四套主题变量（与 home.html 保持一致） ===== */
+:root {
+    --bg: #FFFFFF; --fg: #202124; --muted: #5F6368; --subtle: #9AA0A6;
+    --border: rgba(0,0,0,0.08); --card: #FFFFFF; --card2: #F1F3F4;
+    --accent: #1A73E8; --accent-fg: #FFFFFF; --icon: #5F6368;
+    --topbar: rgba(255,255,255,0.95); --hover: rgba(0,0,0,0.04);
+}
+body.dark {
+    --bg: #202124; --fg: #E8EAED; --muted: #9AA0A6; --subtle: #9AA0A6;
+    --border: rgba(255,255,255,0.10); --card: #2D2E30; --card2: #3C4043;
+    --accent: #8AB4F8; --accent-fg: #202124; --icon: #BDC1C6;
+    --topbar: rgba(32,33,36,0.95); --hover: rgba(255,255,255,0.08);
+}
+body.sepia {
+    --bg: #F4ECD8; --fg: #4B3B2A; --muted: #8A7355; --subtle: #A08B6A;
+    --border: rgba(90,70,40,0.16); --card: #FBF5E6; --card2: #EADFC4;
+    --accent: #A0522D; --accent-fg: #FFFFFF; --icon: #7A6448;
+    --topbar: rgba(244,236,216,0.95); --hover: rgba(120,90,50,0.08);
+}
+body.contrast {
+    --bg: #000000; --fg: #FFFFFF; --muted: #B0B0B0; --subtle: #8A8A8A;
+    --border: rgba(255,255,255,0.18); --card: #0A0A0A; --card2: #141414;
+    --accent: #4DA3FF; --accent-fg: #000000; --icon: #D0D0D0;
+    --topbar: rgba(0,0,0,0.95); --hover: rgba(255,255,255,0.12);
+}
+
+html, body {
+    background: var(--bg); color: var(--fg); min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    transition: background .2s, color .2s;
+}
+
+.top-bar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; gap: 6px;
+    height: 56px; padding: 0 8px;
+    background: var(--topbar);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+}
+.icon-btn {
+    width: 40px; height: 40px; flex: 0 0 40px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; background: transparent; color: var(--icon);
+    border-radius: 50%; cursor: pointer;
+}
+.icon-btn:active { background: var(--card2); }
+.icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
+.top-title { flex: 1; font-size: 17px; font-weight: 600; color: var(--fg); }
+
+.wrap { max-width: 640px; margin: 0 auto; padding: 18px 16px 56px; }
+
+.label { font-size: 13px; font-weight: 600; color: var(--subtle); margin: 4px 4px 8px; letter-spacing: .4px; }
+
+.card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden;
+}
+
+textarea {
+    width: 100%; min-height: 132px; resize: vertical;
+    border: none; outline: none; background: transparent; color: var(--fg);
+    padding: 16px; font-size: 16px; line-height: 1.6; font-family: inherit;
+}
+textarea::placeholder { color: var(--subtle); }
+
+.toolbar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; border-top: 1px solid var(--border);
+}
+.spacer { flex: 1; }
+.chip {
+    border: 1px solid var(--border); background: transparent; color: var(--muted);
+    padding: 6px 12px; border-radius: 18px; font-size: 12.5px;
+    font-family: inherit; cursor: pointer;
+}
+.chip.active { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); font-weight: 600; }
+.text-btn {
+    border: none; background: transparent; color: var(--accent);
+    font-size: 13px; font-family: inherit; padding: 6px 8px; cursor: pointer; border-radius: 8px;
+}
+.text-btn:active { background: var(--hover); }
+
+.primary {
+    display: block; width: 100%; margin-top: 14px;
+    border: none; border-radius: 24px;
+    background: var(--accent); color: var(--accent-fg);
+    font-size: 15px; font-weight: 600; font-family: inherit;
+    padding: 14px; cursor: pointer;
+}
+.primary:active { opacity: .85; }
+
+.services { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+
+.result { margin-top: 16px; padding: 16px; display: none; }
+.result.show { display: block; }
+.result .src { font-size: 13px; color: var(--muted); }
+.result .dst { font-size: 20px; font-weight: 600; margin-top: 8px; line-height: 1.5; word-break: break-word; }
+.result .acts { margin-top: 12px; }
+
+.phrase { display: flex; align-items: baseline; gap: 10px; padding: 11px 16px; border-bottom: 1px solid var(--border); cursor: pointer; }
+.phrase:last-child { border-bottom: none; }
+.phrase:active { background: var(--hover); }
+.phrase .zh { font-size: 14px; }
+.phrase .en { font-size: 13px; color: var(--muted); flex: 1; text-align: right; }
+
+.hint { margin: 14px 4px 0; font-size: 12px; color: var(--subtle); line-height: 1.7; }
+
+#toast {
+    position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%) translateY(12px);
+    background: var(--fg); color: var(--bg);
+    padding: 10px 18px; border-radius: 22px; font-size: 13px;
+    opacity: 0; pointer-events: none; transition: opacity .22s, transform .22s; z-index: 99;
+}
+#toast.show { opacity: .96; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+    <button class="icon-btn" onclick="back()" aria-label="返回">
+        <svg viewBox="0 0 24 24"><path d="M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z"/></svg>
+    </button>
+    <span class="top-title">翻译</span>
+    <button class="icon-btn" onclick="swap()" aria-label="切换方向" id="swapBtn">
+        <svg viewBox="0 0 24 24"><path d="M6.99,11L3,15l3.99,4v-3H14v-2H6.99v-3zM21,9l-3.99,-4v3H10v2h7.01v3L21,9z"/></svg>
+    </button>
+</div>
+
+<div class="wrap">
+    <div class="label" id="dirLabel">自动检测 → 中文 / 英文</div>
+    <div class="card">
+        <textarea id="src" placeholder="输入要翻译的文字…" oninput="onInput()"></textarea>
+        <div class="toolbar">
+            <button class="chip" onclick="clearAll()">清空</button>
+            <span class="spacer"></span>
+            <button class="text-btn" onclick="copyText(document.getElementById('src').value, '原文已复制')">复制原文</button>
+        </div>
+    </div>
+
+    <button class="primary" onclick="translate()">翻译</button>
+
+    <div class="services" id="services">
+        <button class="chip active" data-svc="bing" onclick="pickService('bing')">Bing 翻译</button>
+        <button class="chip" data-svc="google" onclick="pickService('google')">Google 翻译</button>
+        <button class="chip" data-svc="baidu" onclick="pickService('baidu')">百度翻译</button>
+    </div>
+
+    <!-- 离线词条命中结果 -->
+    <div class="card result" id="result">
+        <div class="src" id="resultSrc"></div>
+        <div class="dst" id="resultDst"></div>
+        <div class="acts">
+            <button class="text-btn" onclick="copyText(document.getElementById('resultDst').textContent, '译文已复制')">复制译文</button>
+            <button class="text-btn" onclick="useOnline()">用在线引擎翻译</button>
+        </div>
+    </div>
+
+    <div class="label" style="margin-top:26px">离线常用语（点按即查）</div>
+    <div class="card" id="phraseCard"></div>
+
+    <div class="hint">
+        离线词条命中时直接显示结果；未命中会调用所选在线翻译服务，
+        在新标签页中打开并自动填入文本。
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ===================== 主题 =====================
+function isNative(m) { return !!(window.IceJsBridge && window.IceJsBridge[m]); }
+function normalizeTheme(t) {
+    if (!t) return null;
+    var v = String(t).toLowerCase();
+    if (v === 'amoled') v = 'contrast';
+    return (v === 'light' || v === 'dark' || v === 'sepia' || v === 'contrast') ? v : null;
+}
+var THEME_COLORS = { light: '#FFFFFF', dark: '#202124', sepia: '#F4ECD8', contrast: '#000000' };
+function applyTheme(t) {
+    if (!t) t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    var b = document.body;
+    b.className = b.className.replace(/\b(light|dark|sepia|contrast)\b/g, '').trim();
+    if (t !== 'light') b.classList.add(t);
+    var meta = document.getElementById('themeColorMeta');
+    if (meta) meta.setAttribute('content', THEME_COLORS[t] || '#1A73E8');
+}
+function initTheme() {
+    var t = null;
+    if (isNative('getCurrentTheme')) { try { t = normalizeTheme(window.IceJsBridge.getCurrentTheme()); } catch (e) {} }
+    if (!t) { try { t = normalizeTheme(localStorage.getItem('ice_theme')); } catch (e) {} }
+    applyTheme(t);
+}
+
+function back() {
+    if (window.history.length > 1) { window.history.back(); return; }
+    if (isNative('loadUrl')) window.IceJsBridge.loadUrl('file:///android_asset/home.html');
+}
+function openUrl(url) {
+    if (isNative('newTab')) window.IceJsBridge.newTab(url);
+    else if (isNative('loadUrl')) window.IceJsBridge.loadUrl(url);
+    else window.open(url, '_blank');
+}
+function toast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(function () { el.classList.remove('show'); }, 1800);
+}
+function copyText(text, okMsg) {
+    if (!text) { toast('没有可复制的内容'); return; }
+    try {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        toast(okMsg || '已复制');
+    } catch (e) {
+        toast('复制失败');
+    }
+}
+
+// ===================== 离线词条 =====================
+// 常用短语 / 词汇，中英对照。命中即离线返回，避免必须联网。
+var GLOSSARY = [
+    ['你好', 'Hello'], ['谢谢', 'Thank you'], ['对不起', 'Sorry'],
+    ['再见', 'Goodbye'], ['早上好', 'Good morning'], ['晚安', 'Good night'],
+    ['请', 'Please'], ['不客气', 'You are welcome'], ['没关系', 'It does not matter'],
+    ['我明白了', 'I see'], ['我不知道', 'I do not know'], ['多少钱', 'How much is it'],
+    ['洗手间在哪里', 'Where is the restroom'], ['请帮帮我', 'Please help me'],
+    ['我不会说英语', 'I do not speak English'], ['你会说中文吗', 'Do you speak Chinese'],
+    ['浏览器', 'Browser'], ['书签', 'Bookmark'], ['历史记录', 'History'],
+    ['下载', 'Download'], ['设置', 'Settings'], ['标签页', 'Tab'],
+    ['搜索引擎', 'Search engine'], ['阅读模式', 'Reader mode'], ['无痕模式', 'Incognito mode'],
+    ['广告拦截', 'Ad blocking'], ['主题', 'Theme'], ['隐私', 'Privacy']
+];
+
+var SERVICES = {
+    bing: { name: 'Bing 翻译', url: function (t, to) { return 'https://www.bing.com/translator?from=auto&to=' + to + '&text=' + encodeURIComponent(t); } },
+    google: { name: 'Google 翻译', url: function (t, to) { return 'https://translate.google.com/?sl=auto&tl=' + to + '&op=translate&text=' + encodeURIComponent(t); } },
+    baidu: { name: '百度翻译', url: function (t, to) { return 'https://fanyi.baidu.com/#auto/' + to + '/' + encodeURIComponent(t); } }
+};
+
+var currentService = 'bing';
+// dir: 'auto' | 'zh2en' | 'en2zh'
+var dir = 'auto';
+
+function hasCJK(s) { return /[\u4e00-\u9fff]/.test(s); }
+
+function targetLang(text) {
+    // 返回在线服务需要的目标语言代码
+    if (dir === 'zh2en') return 'en';
+    if (dir === 'en2zh') return 'zh-Hans';
+    return hasCJK(text) ? 'en' : 'zh-Hans';
+}
+function targetLabel(text) {
+    var to = targetLang(text);
+    return (to === 'en') ? '英文' : '中文';
+}
+function updateDirLabel() {
+    var el = document.getElementById('dirLabel');
+    if (dir === 'zh2en') el.textContent = '中文 → 英文';
+    else if (dir === 'en2zh') el.textContent = '英文 → 中文';
+    else el.textContent = '自动检测 → 中文 / 英文';
+}
+
+function swap() {
+    if (dir === 'auto') dir = 'zh2en';
+    else if (dir === 'zh2en') dir = 'en2zh';
+    else dir = 'auto';
+    updateDirLabel();
+    onInput();
+    toast(dir === 'auto' ? '自动检测' : (dir === 'zh2en' ? '强制：中文 → 英文' : '强制：英文 → 中文'));
+}
+
+function pickService(key) {
+    currentService = key;
+    var chips = document.querySelectorAll('#services .chip');
+    for (var i = 0; i < chips.length; i++) {
+        if (chips[i].getAttribute('data-svc') === key) chips[i].classList.add('active');
+        else chips[i].classList.remove('active');
+    }
+}
+
+function lookupOffline(text) {
+    var q = text.trim().toLowerCase();
+    if (!q) return null;
+    // 英文 -> 中文 反查
+    var wantZh = dir === 'zh2en' ? false : (dir === 'en2zh' ? true : !hasCJK(text));
+    for (var i = 0; i < GLOSSARY.length; i++) {
+        var zh = GLOSSARY[i][0], en = GLOSSARY[i][1];
+        if (wantZh) {
+            if (en.toLowerCase() === q) return { src: text, dst: zh };
+        } else {
+            if (zh === text.trim()) return { src: text, dst: en };
+        }
+    }
+    return null;
+}
+
+function showResult(src, dst) {
+    document.getElementById('resultSrc').textContent = src;
+    document.getElementById('resultDst').textContent = dst;
+    document.getElementById('result').classList.add('show');
+}
+function hideResult() {
+    document.getElementById('result').classList.remove('show');
+}
+
+function onInput() {
+    var text = document.getElementById('src').value;
+    var hit = lookupOffline(text);
+    if (hit) showResult(hit.src, hit.dst);
+    else hideResult();
+}
+
+function translate() {
+    var text = document.getElementById('src').value;
+    if (!text.trim()) { toast('请输入要翻译的文字'); return; }
+    var hit = lookupOffline(text);
+    if (hit) { showResult(hit.src, hit.dst); toast('已离线翻译'); return; }
+    // 未命中：交给在线服务，在新标签打开
+    useOnline();
+}
+
+function useOnline() {
+    var text = document.getElementById('src').value.trim();
+    if (!text) { toast('请输入要翻译的文字'); return; }
+    var svc = SERVICES[currentService] || SERVICES.bing;
+    var url = svc.url(text, targetLang(text));
+    toast('正在用' + svc.name + '打开…');
+    openUrl(url);
+}
+
+function clearAll() {
+    document.getElementById('src').value = '';
+    hideResult();
+}
+
+function renderPhrases() {
+    var card = document.getElementById('phraseCard');
+    var html = '';
+    for (var i = 0; i < GLOSSARY.length; i++) {
+        html += '<div class="phrase" data-zh="' + GLOSSARY[i][0] + '" data-en="' + GLOSSARY[i][1] + '">'
+             + '<span class="zh">' + GLOSSARY[i][0] + '</span>'
+             + '<span class="en">' + GLOSSARY[i][1] + '</span></div>';
+    }
+    card.innerHTML = html;
+    var rows = card.querySelectorAll('.phrase');
+    for (var j = 0; j < rows.length; j++) {
+        rows[j].addEventListener('click', function () {
+            var zh = this.getAttribute('data-zh');
+            var en = this.getAttribute('data-en');
+            document.getElementById('src').value = zh;
+            showResult(zh, en);
+            updateDirLabel();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+}
+
+initTheme();
+updateDirLabel();
+renderPhrases();
+</script>
+</body>
+</html>

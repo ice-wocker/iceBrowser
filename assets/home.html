@@ -3,37 +3,124 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
-<meta name="theme-color" content="#1A73E8">
+<meta name="theme-color" content="#1A73E8" id="themeColorMeta">
 <title>ice 浏览器</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+/* ===== 主题变量(四套主题) ===== */
+:root {
+    --bg: #FFFFFF;
+    --fg: #202124;
+    --muted: #5F6368;
+    --subtle: #9AA0A6;
+    --border: rgba(0, 0, 0, 0.06);
+    --border-strong: #DADCE0;
+    --surface: #F1F3F4;
+    --card: #FFFFFF;
+    --card2: #F8F9FA;
+    --hover: rgba(0, 0, 0, 0.04);
+    --accent: #1A73E8;
+    --accent-2: #1557B0;
+    --accent-fg: #FFFFFF;
+    --accent-soft: rgba(26, 115, 232, 0.3);
+    --icon: #5F6368;
+    --topbar: rgba(255, 255, 255, 0.95);
+    --result-title: #1A0DAB;
+    --shadow: rgba(0, 0, 0, 0.12);
+    --logo: #1A73E8;
+}
+body.dark {
+    --bg: #202124;
+    --fg: #E8EAED;
+    --muted: #9AA0A6;
+    --subtle: #9AA0A6;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: #5F6368;
+    --surface: #3C4043;
+    --card: #2D2E30;
+    --card2: #3C4043;
+    --hover: rgba(255, 255, 255, 0.08);
+    --accent: #8AB4F8;
+    --accent-2: #AECBFA;
+    --accent-fg: #202124;
+    --accent-soft: rgba(138, 180, 248, 0.4);
+    --icon: #BDC1C6;
+    --topbar: rgba(32, 33, 36, 0.95);
+    --result-title: #8AB4F8;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --logo: #8AB4F8;
+}
+body.sepia {
+    --bg: #F4ECD8;
+    --fg: #4B3B2A;
+    --muted: #8A7355;
+    --subtle: #A08B6A;
+    --border: rgba(90, 70, 40, 0.14);
+    --border-strong: #D8C9A8;
+    --surface: #EADFC4;
+    --card: #FBF5E6;
+    --card2: #EFE4CB;
+    --hover: rgba(120, 90, 50, 0.08);
+    --accent: #A0522D;
+    --accent-2: #8B4513;
+    --accent-fg: #FFFFFF;
+    --accent-soft: rgba(160, 82, 45, 0.35);
+    --icon: #7A6448;
+    --topbar: rgba(244, 236, 216, 0.95);
+    --result-title: #8B4513;
+    --shadow: rgba(90, 70, 40, 0.2);
+    --logo: #A0522D;
+}
+body.contrast {
+    --bg: #000000;
+    --fg: #FFFFFF;
+    --muted: #B0B0B0;
+    --subtle: #8A8A8A;
+    --border: rgba(255, 255, 255, 0.18);
+    --border-strong: #4D4D4D;
+    --surface: #101010;
+    --card: #0A0A0A;
+    --card2: #141414;
+    --hover: rgba(255, 255, 255, 0.12);
+    --accent: #4DA3FF;
+    --accent-2: #82B1FF;
+    --accent-fg: #000000;
+    --accent-soft: rgba(77, 163, 255, 0.5);
+    --icon: #D0D0D0;
+    --topbar: rgba(0, 0, 0, 0.95);
+    --result-title: #82B1FF;
+    --shadow: rgba(0, 0, 0, 0.8);
+    --logo: #4DA3FF;
+}
+
 html, body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
-    background: #FFFFFF;
-    color: #202124;
+    background: var(--bg);
+    color: var(--fg);
     min-height: 100vh;
     overflow-x: hidden;
+    transition: background 0.2s, color 0.2s;
 }
-body.dark { background: #202124; color: #E8EAED; }
 
 /* 顶部 */
 .top-bar {
     position: sticky; top: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
     padding: 12px 16px; height: 56px;
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--topbar);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
 }
-body.dark .top-bar { background: rgba(32, 33, 36, 0.95); border-bottom-color: rgba(255, 255, 255, 0.08); }
+body.incognito .top-bar { border-bottom-color: rgba(124, 77, 255, 0.6); }
 
 .logo {
     display: flex; align-items: center; gap: 8px;
     font-size: 18px; font-weight: 600;
-    color: #1A73E8;
-    user-select: none;
+    color: var(--logo);
+    user-select: none; cursor: pointer;
 }
-body.dark .logo { color: #8AB4F8; }
 .logo-icon {
     width: 32px; height: 32px;
     background: linear-gradient(135deg, #1A73E8 0%, #4285F4 100%);
@@ -42,10 +129,11 @@ body.dark .logo { color: #8AB4F8; }
     color: white; font-size: 18px; font-weight: bold;
     box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
 }
+body.incognito .logo-icon { background: linear-gradient(135deg, #7C4DFF 0%, #B388FF 100%); }
 
 .tab-count {
-    background: #1A73E8;
-    color: white;
+    background: var(--accent);
+    color: var(--accent-fg);
     padding: 2px 8px;
     border-radius: 12px;
     font-size: 12px;
@@ -55,17 +143,27 @@ body.dark .logo { color: #8AB4F8; }
     text-align: center;
 }
 
+.badge-incognito {
+    display: none;
+    margin-left: 6px; padding: 2px 8px;
+    background: rgba(124, 77, 255, 0.15);
+    color: #7C4DFF;
+    border: 1px solid rgba(124, 77, 255, 0.5);
+    border-radius: 12px; font-size: 11px; font-weight: 600;
+}
+body.incognito .badge-incognito { display: inline-block; }
+body.contrast.incognito .badge-incognito { color: #B388FF; }
+
 .top-actions { display: flex; gap: 4px; }
 .icon-btn {
     width: 40px; height: 40px; border-radius: 50%;
-    background: transparent; border: none; color: #5F6368;
+    background: transparent; border: none; color: var(--icon);
     cursor: pointer; display: flex; align-items: center; justify-content: center;
     transition: background 0.2s;
 }
-body.dark .icon-btn { color: #BDC1C6; }
-.icon-btn:hover, .icon-btn:active { background: rgba(0, 0, 0, 0.04); }
-body.dark .icon-btn:hover, .icon-btn:active { background: rgba(255, 255, 255, 0.08); }
+.icon-btn:hover, .icon-btn:active { background: var(--hover); }
 .icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
+.icon-btn.bm-on { color: var(--accent); }
 
 /* 主体 */
 .main { max-width: 720px; margin: 0 auto; padding: 0 16px; }
@@ -78,25 +176,21 @@ body.dark .icon-btn:hover, .icon-btn:active { background: rgba(255, 255, 255, 0.
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     background-clip: text; margin-bottom: 8px; letter-spacing: -1px; line-height: 1.1;
 }
-.hero-tagline { font-size: 14px; color: #5F6368; margin-bottom: 32px; }
-body.dark .hero-tagline { color: #9AA0A6; }
+.hero-tagline { font-size: 14px; color: var(--muted); margin-bottom: 32px; }
 
 /* 搜索框 */
 .search-container { position: relative; margin-bottom: 16px; }
 .search-box {
     display: flex; align-items: center;
-    background: #F1F3F4; border-radius: 28px;
+    background: var(--surface); border-radius: 28px;
     padding: 0 8px 0 20px; height: 56px;
     transition: box-shadow 0.2s, background 0.2s;
     border: 1px solid transparent;
 }
-body.dark .search-box { background: #3C4043; }
 .search-box:focus-within {
-    background: #FFFFFF;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(26, 115, 232, 0.3);
+    background: var(--card);
+    box-shadow: 0 2px 12px var(--shadow), 0 0 0 1px var(--accent-soft);
 }
-body.dark .search-box:focus-within { background: #202124; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(138, 180, 248, 0.4); }
-
 .engine-icon {
     width: 24px; height: 24px;
     margin-right: 12px; flex-shrink: 0;
@@ -105,116 +199,130 @@ body.dark .search-box:focus-within { background: #202124; box-shadow: 0 2px 12px
     color: white; font-weight: bold; font-size: 13px;
     background: #4285F4;
 }
-body.dark .engine-icon { background: #8AB4F8; color: #202124; }
-
 .search-input {
     flex: 1; border: none; outline: none; background: transparent;
     font-size: 16px; color: inherit; font-family: inherit;
     padding: 0 8px; min-width: 0;
 }
-.search-input::placeholder { color: #9AA0A6; }
-
+.search-input::placeholder { color: var(--subtle); }
 .search-btn {
-    background: #1A73E8; color: white; border: none;
+    background: var(--accent); color: var(--accent-fg); border: none;
     height: 40px; padding: 0 18px; border-radius: 20px;
     font-size: 14px; font-weight: 500; cursor: pointer;
     margin-left: 4px; font-family: inherit;
 }
-.search-btn:hover { background: #1557B0; }
+.search-btn:hover { background: var(--accent-2); }
 .search-btn:active { transform: scale(0.97); }
-.search-btn:disabled { background: #9AA0A6; }
+.search-btn:disabled { background: var(--subtle); }
 
 /* 引擎 */
 .engine-tabs {
     display: flex; gap: 4px; margin-bottom: 24px; padding: 4px;
-    background: #F1F3F4; border-radius: 20px;
+    background: var(--surface); border-radius: 20px;
     overflow-x: auto; -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
 }
-body.dark .engine-tabs { background: #3C4043; }
 .engine-tabs::-webkit-scrollbar { display: none; }
 .engine-tab {
     flex-shrink: 0; padding: 8px 14px;
-    background: transparent; border: none; color: #5F6368;
+    background: transparent; border: none; color: var(--muted);
     font-size: 13px; font-weight: 500; border-radius: 16px;
     cursor: pointer; font-family: inherit; white-space: nowrap;
     transition: background 0.2s, color 0.2s;
 }
-.engine-tab.active { background: #FFFFFF; color: #1A73E8; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); }
-body.dark .engine-tab { color: #BDC1C6; }
-body.dark .engine-tab.active { background: #202124; color: #8AB4F8; }
+.engine-tab.active { background: var(--card); color: var(--accent); box-shadow: 0 1px 4px var(--shadow); }
 
 /* 建议 */
 .suggestions {
     position: absolute; top: 56px; left: 0; right: 0;
-    background: #FFFFFF; border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+    background: var(--card); border-radius: 16px;
+    box-shadow: 0 4px 24px var(--shadow);
     z-index: 50; display: none; overflow: hidden;
     max-height: 360px; overflow-y: auto;
 }
-body.dark .suggestions { background: #2D2E30; }
 .suggestions.show { display: block; }
 .suggestion-item {
     padding: 12px 20px; display: flex; align-items: center; gap: 16px;
-    cursor: pointer; border-bottom: 1px solid #F1F3F4;
+    cursor: pointer; border-bottom: 1px solid var(--surface);
 }
-body.dark .suggestion-item { border-bottom-color: #3C4043; }
 .suggestion-item:last-child { border-bottom: none; }
-.suggestion-item:hover, .suggestion-item.active { background: #F8F9FA; }
-body.dark .suggestion-item:hover, body.dark .suggestion-item.active { background: #3C4043; }
-.suggestion-icon { color: #9AA0A6; flex-shrink: 0; }
+.suggestion-item:hover, .suggestion-item.active { background: var(--card2); }
+.suggestion-icon { color: var(--subtle); flex-shrink: 0; }
 .suggestion-icon svg { width: 18px; height: 18px; fill: currentColor; }
-.suggestion-text { flex: 1; font-size: 15px; }
-.suggestion-text mark { color: #1A73E8; font-weight: 600; background: transparent; }
-.suggestion-type { font-size: 11px; color: #9AA0A6; padding: 2px 6px; background: #F1F3F4; border-radius: 4px; }
-body.dark .suggestion-type { background: #3C4043; color: #BDC1C6; }
+.suggestion-text { flex: 1; font-size: 15px; word-break: break-all; }
+.suggestion-text mark { color: var(--accent); font-weight: 600; background: transparent; }
+.suggestion-type { font-size: 11px; color: var(--subtle); padding: 2px 6px; background: var(--surface); border-radius: 4px; }
+
+/* 最近搜索 */
+.recent-section { margin-top: 4px; margin-bottom: 8px; }
+.recent-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.recent-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 6px 6px 14px;
+    background: var(--surface); border-radius: 18px;
+    color: var(--fg); font-size: 13px; cursor: pointer;
+    border: none; font-family: inherit; max-width: 100%;
+}
+.recent-chip:hover { background: var(--hover); }
+.recent-chip .recent-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
+.recent-del {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 14px; line-height: 1; flex-shrink: 0;
+}
+.recent-del:hover { background: rgba(229, 57, 53, 0.15); color: #E53935; }
 
 /* 快捷方式 */
-.shortcuts-section { margin-top: 32px; padding-bottom: 40px; }
+.shortcuts-section { margin-top: 24px; padding-bottom: 40px; }
 .section-title {
-    font-size: 13px; color: #5F6368; font-weight: 500;
+    font-size: 13px; color: var(--muted); font-weight: 500;
     margin-bottom: 12px; padding-left: 4px;
     text-transform: uppercase; letter-spacing: 0.5px;
     display: flex; align-items: center; justify-content: space-between;
 }
-body.dark .section-title { color: #9AA0A6; }
 .edit-link {
-    color: #1A73E8; font-size: 12px; cursor: pointer;
+    color: var(--accent); font-size: 12px; cursor: pointer;
     text-transform: none; letter-spacing: 0;
 }
-body.dark .edit-link { color: #8AB4F8; }
-
 .shortcuts-grid {
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
 }
 .shortcut {
+    position: relative;
     display: flex; flex-direction: column; align-items: center;
     padding: 12px 8px; background: transparent;
     border-radius: 12px; color: inherit; cursor: pointer;
     border: none; font-family: inherit;
     transition: background 0.2s;
 }
-.shortcut:hover, .shortcut:active { background: rgba(0, 0, 0, 0.04); }
-body.dark .shortcut:hover, body.dark .shortcut:active { background: rgba(255, 255, 255, 0.06); }
+.shortcut:hover, .shortcut:active { background: var(--hover); }
 .shortcut-icon {
     width: 48px; height: 48px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     color: white; font-size: 20px; font-weight: bold;
     margin-bottom: 8px; background: #5F6368;
 }
-.shortcut-name { font-size: 12px; text-align: center; }
+.shortcut-name { font-size: 12px; text-align: center; word-break: break-all; }
+.shortcut-del {
+    display: none;
+    position: absolute; top: 2px; right: 2px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #E53935; color: #FFFFFF;
+    align-items: center; justify-content: center;
+    font-size: 14px; line-height: 1; z-index: 2;
+    border: 2px solid var(--bg);
+}
+.shortcut:hover .shortcut-del { display: flex; }
 .edit-mode .shortcut { position: relative; }
 .edit-mode .shortcut::after {
-    content: '×'; position: absolute; top: 4px; right: 4px;
+    content: '\00D7'; position: absolute; top: 4px; right: 4px;
     width: 20px; height: 20px; border-radius: 50%;
     background: #E53935; color: white;
     display: flex; align-items: center; justify-content: center;
     font-size: 14px; line-height: 1;
 }
-.add-shortcut { border: 2px dashed #DADCE0; background: transparent; }
-body.dark .add-shortcut { border-color: #5F6368; }
-.add-shortcut-icon { background: transparent !important; border: 2px dashed #DADCE0; color: #5F6368 !important; }
-body.dark .add-shortcut-icon { border-color: #5F6368; color: #BDC1C6 !important; }
+.add-shortcut { border: 2px dashed var(--border-strong); background: transparent; }
+.add-shortcut-icon { background: transparent !important; border: 2px dashed var(--border-strong); color: var(--icon) !important; }
 
 /* 抽屉 */
 .drawer-overlay {
@@ -226,24 +334,20 @@ body.dark .add-shortcut-icon { border-color: #5F6368; color: #BDC1C6 !important;
 .drawer {
     position: fixed; top: 0; left: 0; bottom: 0;
     width: 300px; max-width: 85%;
-    background: #FFFFFF; z-index: 201;
+    background: var(--card); z-index: 201;
     transform: translateX(-100%); transition: transform 0.3s;
     overflow-y: auto;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 0 8px var(--shadow);
     display: none;
 }
-body.dark .drawer { background: #2D2E30; }
 .drawer.show { transform: translateX(0); display: block; }
 .drawer-header {
     padding: 24px 20px 16px;
-    border-bottom: 1px solid #F1F3F4;
+    border-bottom: 1px solid var(--border);
 }
-body.dark .drawer-header { border-bottom-color: #3C4043; }
 .drawer-title { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
-.drawer-subtitle { font-size: 12px; color: #5F6368; }
-body.dark .drawer-subtitle { color: #9AA0A6; }
-.drawer-section { padding: 12px 0; border-bottom: 1px solid #F1F3F4; }
-body.dark .drawer-section { border-bottom-color: #3C4043; }
+.drawer-subtitle { font-size: 12px; color: var(--muted); }
+.drawer-section { padding: 12px 0; border-bottom: 1px solid var(--border); }
 .drawer-item {
     display: flex; align-items: center; gap: 16px;
     padding: 12px 20px; color: inherit;
@@ -251,81 +355,82 @@ body.dark .drawer-section { border-bottom-color: #3C4043; }
     background: transparent; border: none; width: 100%;
     text-align: left; font-family: inherit; font-size: 15px;
 }
-.drawer-item:hover, .drawer-item:active { background: #F8F9FA; }
-body.dark .drawer-item:hover, body.dark .drawer-item:active { background: #3C4043; }
-.drawer-item-icon { width: 24px; height: 24px; color: #5F6368; }
-body.dark .drawer-item-icon { color: #BDC1C6; }
+.drawer-item:hover, .drawer-item:active { background: var(--card2); }
+.drawer-item-icon { width: 24px; height: 24px; color: var(--icon); flex-shrink: 0; }
 .drawer-item-icon svg { width: 24px; height: 24px; fill: currentColor; }
 .drawer-item-label { flex: 1; }
 .drawer-item-counter {
-    background: #F1F3F4; color: #5F6368;
+    background: var(--surface); color: var(--muted);
     font-size: 11px; padding: 2px 8px; border-radius: 10px;
 }
-body.dark .drawer-item-counter { background: #3C4043; color: #BDC1C6; }
+.drawer-list { padding: 0 8px; }
+.drawer-list-item {
+    display: block; width: 100%; text-align: left;
+    background: transparent; border: none; cursor: pointer;
+    font-family: inherit; color: var(--fg);
+    padding: 8px 12px; border-radius: 8px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: 13px;
+}
+.drawer-list-item:hover, .drawer-list-item:active { background: var(--card2); }
+.drawer-list-item .drawer-list-domain { color: var(--muted); font-size: 11px; margin-left: 6px; }
+.drawer-empty { padding: 8px 12px; font-size: 12px; color: var(--subtle); }
 
 /* 主题 */
 .theme-picker { display: flex; gap: 8px; padding: 8px 20px; }
 .theme-option {
-    flex: 1; padding: 8px;
-    border: 1px solid #DADCE0; border-radius: 8px;
+    flex: 1; padding: 8px 4px;
+    border: 1px solid var(--border-strong); border-radius: 8px;
     background: transparent; cursor: pointer;
     font-family: inherit; font-size: 12px; color: inherit;
     display: flex; flex-direction: column; align-items: center; gap: 4px;
 }
-.theme-option.active { border-color: #1A73E8; border-width: 2px; }
+.theme-option.active { border-color: var(--accent); border-width: 2px; }
 .theme-color { width: 32px; height: 32px; border-radius: 6px; border: 1px solid rgba(0, 0, 0, 0.1); }
 
 /* 底部 */
-.footer { padding: 24px 16px; text-align: center; color: #5F6368; font-size: 12px; }
-body.dark .footer { color: #9AA0A6; }
+.footer { padding: 24px 16px; text-align: center; color: var(--muted); font-size: 12px; }
 .footer a { color: inherit; text-decoration: none; }
 
 /* 搜索结果 (ice 自研) */
 .results { margin-top: 24px; }
+.results-info { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
 .result {
     margin-bottom: 24px; padding-bottom: 16px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid var(--border);
 }
-body.dark .result { border-bottom-color: rgba(255, 255, 255, 0.08); }
 .result-url {
-    font-size: 12px; color: #5F6368; margin-bottom: 4px;
+    font-size: 12px; color: var(--muted); margin-bottom: 4px;
     display: flex; align-items: center; gap: 6px;
 }
-body.dark .result-url { color: #9AA0A6; }
 .result-domain {
-    background: #1A73E8; color: white; font-size: 10px;
+    background: var(--accent); color: var(--accent-fg); font-size: 10px;
     padding: 1px 6px; border-radius: 4px; font-weight: 500;
+    flex-shrink: 0;
 }
+.result-url-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .result-title {
-    font-size: 18px; color: #1A0DAB;
+    font-size: 18px; color: var(--result-title);
     text-decoration: none; font-weight: 400;
     line-height: 1.3; display: block; margin-bottom: 4px;
 }
-body.dark .result-title { color: #8AB4F8; }
 .result-title:hover { text-decoration: underline; }
-.result-snippet {
-    font-size: 14px; color: #4D5156; line-height: 1.5;
-}
-body.dark .result-snippet { color: #BDC1C6; }
-.result-snippet mark { background: #FFEB3B; color: #202124; padding: 0 2px; }
-body.dark .result-snippet mark { background: #FFEB3B; color: #202124; }
+.result-snippet { font-size: 14px; color: var(--muted); line-height: 1.5; }
 .result-actions { display: flex; gap: 8px; margin-top: 6px; }
 .result-action {
-    font-size: 12px; color: #1A73E8;
+    font-size: 12px; color: var(--accent);
     background: transparent; border: none; cursor: pointer;
-    padding: 4px 8px; border-radius: 4px;
+    padding: 4px 8px; border-radius: 4px; font-family: inherit;
 }
-.result-action:hover { background: #F1F3F4; }
-body.dark .result-action { color: #8AB4F8; }
-body.dark .result-action:hover { background: #3C4043; }
+.result-action:hover { background: var(--hover); }
 
-/* 加载 */
-.loading { text-align: center; padding: 40px 16px; color: #5F6368; }
-body.dark .loading { color: #9AA0A6; }
+/* 加载 / 提示 */
+.loading { text-align: center; padding: 40px 16px; color: var(--muted); }
+body.sepia .loading { color: var(--muted); }
 .spinner {
     width: 24px; height: 24px;
-    border: 2px solid #E0E0E0;
-    border-top-color: #1A73E8;
+    border: 2px solid var(--border-strong);
+    border-top-color: var(--accent);
     border-radius: 50%; margin: 0 auto 12px;
     animation: spin 0.8s linear infinite;
 }
@@ -342,13 +447,18 @@ body.dark .loading { color: #9AA0A6; }
     transition: opacity 0.3s, transform 0.3s;
     max-width: 80%; text-align: center;
 }
-body.dark .toast { background: rgba(0, 0, 0, 0.9); }
 .toast.show { opacity: 1; }
 
+@media (max-width: 480px) {
+    .hero { padding: 40px 0 20px 0; }
+    .hero-title { font-size: 44px; }
+}
 @media (max-width: 360px) {
-    .hero { padding: 32px 0 16px 0; }
-    .hero-title { font-size: 40px; }
-    .shortcuts-grid { grid-template-columns: repeat(3, 1fr); }
+    .hero { padding: 28px 0 14px 0; }
+    .hero-title { font-size: 36px; }
+    .shortcuts-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .search-btn { padding: 0 12px; }
+    .top-actions .icon-btn { width: 36px; height: 36px; }
 }
 </style>
 </head>
@@ -356,16 +466,20 @@ body.dark .toast { background: rgba(0, 0, 0, 0.9); }
 
 <!-- 顶部条 -->
 <div class="top-bar">
-    <div class="logo" onclick="toggleDrawer()">
+    <div class="logo" onclick="toggleDrawer()" role="button" tabindex="0" aria-label="打开菜单">
         <div class="logo-icon">i</div>
         <span>ice</span>
-        <span class="tab-count" id="tab_count">1</span>
+        <span class="tab-count" id="tab_count" aria-label="标签页数量">1</span>
+        <span class="badge-incognito" id="incognitoBadge" aria-label="无痕模式">无痕</span>
     </div>
     <div class="top-actions">
-        <button class="icon-btn" onclick="toggleTheme()" title="切换主题">
+        <button class="icon-btn" id="bmBtn" onclick="toggleBookmark()" aria-label="收藏本页" title="收藏本页">
+            <svg viewBox="0 0 24 24"><path id="bmPath" d="M17,3H7C5.89,3 5,3.9 5,5V21L12,18L19,21V5C19,3.9 18.11,3 17,3M17,5V18L12,15.82L7,18V5H17Z"/></svg>
+        </button>
+        <button class="icon-btn" onclick="toggleTheme()" aria-label="切换主题" title="切换主题">
             <svg viewBox="0 0 24 24"><path d="M12,18V6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,15.31L23.31,12L20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31Z"/></svg>
         </button>
-        <button class="icon-btn" onclick="openTranslate()" title="翻译">
+        <button class="icon-btn" onclick="openTranslate()" aria-label="翻译" title="翻译">
             <svg viewBox="0 0 24 24"><path d="M12.87,15.07L10.33,12.56L10.36,12.53C12.1,10.59 13.34,8.36 14.07,6H17V4H10V2H8V4H1V6H12.17C11.5,7.92 10.44,9.75 9,11.35C8.07,10.32 7.3,9.19 6.69,8H4.5C5.3,9.5 6.27,10.91 7.41,12.18L2.5,17.04L4,18.5L9,13.5L12.5,17L12.87,15.07M18.5,10H16.5L12,22H14L15.12,19H19.87L21,22H23L18.5,10M15.88,17L17.5,12.67L19.12,17H15.88Z"/></svg>
         </button>
     </div>
@@ -383,31 +497,42 @@ body.dark .toast { background: rgba(0, 0, 0, 0.9); }
         <form class="search-box" id="searchForm" onsubmit="return doSearch(event)">
             <div class="engine-icon" id="engineIcon">i</div>
             <input type="text" class="search-input" id="searchInput"
-                   placeholder="搜索或输入网址..." autocomplete="off"
-                   autocorrect="off" autocapitalize="off" spellcheck="false"
-                   oninput="onSearchInput()" onfocus="showSuggestions()">
-            <button type="submit" class="search-btn" id="searchBtn">搜索</button>
+                   placeholder="搜索或输入网址..."
+                   autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                   aria-label="搜索框"
+                   oninput="onSearchInput()" onfocus="onSearchFocus()"
+                   onkeydown="onSearchKeydown(event)">
+            <button type="submit" class="search-btn" id="searchBtn" aria-label="搜索">搜索</button>
         </form>
-        <div class="suggestions" id="suggestions"></div>
+        <div class="suggestions" id="suggestions" role="listbox" aria-label="搜索建议"></div>
     </div>
 
     <!-- 引擎切换 -->
-    <div class="engine-tabs" id="engineTabs"></div>
+    <div class="engine-tabs" id="engineTabs" role="tablist" aria-label="搜索引擎"></div>
+
+    <!-- 最近搜索 -->
+    <div class="recent-section" id="recentSection" style="display:none">
+        <div class="section-title">
+            <span>最近搜索</span>
+            <span class="edit-link" id="recent_clear" onclick="clearRecent()" role="button" tabindex="0">清空全部</span>
+        </div>
+        <div class="recent-list" id="recentList"></div>
+    </div>
 
     <!-- 搜索结果 -->
-    <div class="results" id="results"></div>
+    <div class="results" id="results" aria-live="polite"></div>
 
     <!-- 快捷方式 -->
     <div class="shortcuts-section" id="shortcutsSection">
         <div class="section-title">
             <span>常用网站</span>
-            <span class="edit-link" id="edit_link" onclick="toggleEditMode()">编辑</span>
+            <span class="edit-link" id="edit_link" onclick="toggleEditMode()" role="button" tabindex="0">编辑</span>
         </div>
         <div class="shortcuts-grid" id="shortcutsGrid"></div>
     </div>
 
     <div class="footer">
-        <div>ice 浏览器 v4.0.0</div>
+        <div>ice 浏览器 v5.0</div>
         <div>纯 Java · 零依赖 · 自研 ice 搜索引擎</div>
     </div>
 </div>
@@ -417,7 +542,7 @@ body.dark .toast { background: rgba(0, 0, 0, 0.9); }
 <div class="drawer" id="drawer">
     <div class="drawer-header">
         <div class="drawer-title">ice 浏览器</div>
-        <div class="drawer-subtitle">v4.0.0 · 真多 WebView · 自研搜索</div>
+        <div class="drawer-subtitle" id="drawerSubtitle">v5.0 · 真多 WebView · 自研搜索</div>
     </div>
     <div class="drawer-section">
         <button class="drawer-item" onclick="newTab()">
@@ -436,33 +561,41 @@ body.dark .toast { background: rgba(0, 0, 0, 0.9); }
     </div>
     <div class="drawer-section">
         <div class="section-title">导航</div>
-        <button class="drawer-item" onclick="iceNav('file:///android_asset/bookmarks.html')">
+        <button class="drawer-item" onclick="openBookmarks()">
             <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M17,3H7C5.89,3 5,3.9 5,5V21L12,18L19,21V5C19,3.9 18.11,3 17,3Z"/></svg></div>
             <div class="drawer-item-label">书签</div>
         </button>
-        <button class="drawer-item" onclick="iceNav('file:///android_asset/history.html')">
+        <button class="drawer-item" onclick="openHistory()">
             <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M13,3A9,9 0 0,0 4,12H1L4.89,15.89L4.96,16.03L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3M12,8V13L16.28,15.54L17,14.12L13.5,12.07V8H12Z"/></svg></div>
             <div class="drawer-item-label">历史记录</div>
         </button>
-        <button class="drawer-item" onclick="iceNav('file:///android_asset/downloads.html')">
+        <button class="drawer-item" onclick="openDownloads()">
             <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/></svg></div>
             <div class="drawer-item-label">下载</div>
         </button>
     </div>
+    <div class="drawer-section" id="drawerHistorySection" style="display:none">
+        <div class="section-title"><span>最近历史</span><span class="edit-link" onclick="openHistory()" role="button" tabindex="0">全部</span></div>
+        <div class="drawer-list" id="drawerHistory"></div>
+    </div>
+    <div class="drawer-section" id="drawerBookmarkSection" style="display:none">
+        <div class="section-title"><span>书签</span><span class="edit-link" onclick="openBookmarks()" role="button" tabindex="0">全部</span></div>
+        <div class="drawer-list" id="drawerBookmarks"></div>
+    </div>
     <div class="drawer-section">
         <div class="section-title">外观</div>
         <div class="theme-picker">
-            <button class="theme-option" data-theme="light" onclick="setTheme('light')">
+            <button class="theme-option" data-theme="light" onclick="setTheme('light')" aria-label="浅色主题">
                 <div class="theme-color" style="background:#FFFFFF"></div>浅色
             </button>
-            <button class="theme-option" data-theme="dark" onclick="setTheme('dark')">
+            <button class="theme-option" data-theme="dark" onclick="setTheme('dark')" aria-label="深色主题">
                 <div class="theme-color" style="background:#202124"></div>深色
             </button>
-            <button class="theme-option" data-theme="sepia" onclick="setTheme('sepia')">
+            <button class="theme-option" data-theme="sepia" onclick="setTheme('sepia')" aria-label="护眼主题">
                 <div class="theme-color" style="background:#F4ECD8"></div>护眼
             </button>
-            <button class="theme-option" data-theme="contrast" onclick="setTheme('contrast')">
-                <div class="theme-color" style="background:#000000"></div>黑白
+            <button class="theme-option" data-theme="contrast" onclick="setTheme('contrast')" aria-label="纯黑主题">
+                <div class="theme-color" style="background:#000000"></div>纯黑
             </button>
         </div>
     </div>
@@ -476,9 +609,9 @@ body.dark .toast { background: rgba(0, 0, 0, 0.9); }
             <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C7,12 7,12 7.44,13.27L9.5,15C10.59,15 11.65,14.61 12.46,13.95L12.85,13.06L13.06,12.85L13.95,12.46C14.61,11.65 15,10.59 15,9.5C15,7 13,5 9.5,5Z"/></svg></div>
             <div class="drawer-item-label">页面查找</div>
         </button>
-        <button class="drawer-item" onclick="addBookmark()">
+        <button class="drawer-item" onclick="toggleBookmark()">
             <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg></div>
-            <div class="drawer-item-label">添加书签</div>
+            <div class="drawer-item-label" id="drawerBookmarkLabel">添加书签</div>
         </button>
         <button class="drawer-item" onclick="enterReaderMode()">
             <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M4,6H2V20A2,2 0 0,0 4,22H18V20H4V6M20,2H8A2,2 0 0,0 6,4V16A2,2 0 0,0 8,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M20,16H8V4H20V16Z"/></svg></div>
@@ -506,464 +639,930 @@ body.dark .toast { background: rgba(0, 0, 0, 0.9); }
 <!-- 通知 -->
 <div class="toast" id="toast"></div>
 
-<!-- 隐藏的 find bar (通过 btn 触发) -->
-<div id="__ice_find_container" style="display:none"></div>
-
 <script>
-// === 状态 ===
-const state = {
-    theme: localStorage.getItem('ice_theme') || 'auto',
-    editMode: false,
-    shortcuts: JSON.parse(localStorage.getItem('ice_shortcuts') || 'null') || [
-        { name: 'Bing', url: 'https://www.bing.com', icon: 'B', color: '#008373' },
-        { name: '百度', url: 'https://www.baidu.com', icon: '百', color: '#2932E1' },
-        { name: 'GitHub', url: 'https://github.com', icon: 'G', color: '#24292E' },
-        { name: '知乎', url: 'https://www.zhihu.com', icon: '知', color: '#0084FF' },
-        { name: 'B站', url: 'https://www.bilibili.com', icon: 'B', color: '#FB7299' },
-        { name: '微博', url: 'https://weibo.com', icon: '微', color: '#E6162D' },
-        { name: 'YouTube', url: 'https://www.youtube.com', icon: 'Y', color: '#FF0000' },
-        { name: '淘宝', url: 'https://www.taobao.com', icon: '淘', color: '#FF4200' }
-    ]
+// ===================== 状态 =====================
+// 引擎以原生契约中的名称为 key，便于与 getSearchEngine/setSearchEngine 直接同步
+var engines = {
+    'ice': { name: 'ice', icon: 'i', color: '#1A73E8', url: null },
+    'Bing': { name: 'Bing', icon: 'B', color: '#008373', url: 'https://www.bing.com/search?q=' },
+    'Google': { name: 'Google', icon: 'G', color: '#4285F4', url: 'https://www.google.com/search?q=' },
+    'DuckDuckGo': { name: 'DuckDuckGo', icon: 'D', color: '#DE5833', url: 'https://duckduckgo.com/?q=' },
+    '百度': { name: '百度', icon: '百', color: '#2932E1', url: 'https://www.baidu.com/s?wd=' },
+    '搜狗': { name: '搜狗', icon: 'S', color: '#FF6F00', url: 'https://www.sogou.com/web?query=' }
 };
+var engineOrder = ['ice', 'Bing', 'Google', 'DuckDuckGo', '百度', '搜狗'];
 
-const engines = {
-    ice: { name: 'ice', icon: 'i', color: '#1A73E8' },
-    bing: { name: 'Bing', icon: 'B', color: '#008373' },
-    google: { name: 'Google', icon: 'G', color: '#4285F4' },
-    duckduckgo: { name: 'DDG', icon: 'D', color: '#DE5833' },
-    baidu: { name: '百度', icon: '百', color: '#2932E1' },
-    sogou: { name: '搜狗', icon: 'S', color: '#FF6F00' }
-};
+var defaultShortcuts = [
+    { name: '百度', url: 'https://www.baidu.com', icon: '百', color: '#2932E1' },
+    { name: '知乎', url: 'https://www.zhihu.com', icon: '知', color: '#0084FF' },
+    { name: 'Bilibili', url: 'https://www.bilibili.com', icon: 'B', color: '#FB7299' },
+    { name: 'GitHub', url: 'https://github.com', icon: 'G', color: '#24292E' },
+    { name: '淘宝', url: 'https://www.taobao.com', icon: '淘', color: '#FF4200' },
+    { name: '微博', url: 'https://weibo.com', icon: '微', color: '#E6162D' },
+    { name: '豆瓣', url: 'https://www.douban.com', icon: '豆', color: '#2E963D' },
+    { name: '掘金', url: 'https://juejin.cn', icon: '掘', color: '#1E80FF' }
+];
 
-let currentEngine = 'ice';
-let lastQuery = '';
-let searchId = 0;
-let debounceTimer = null;
-let callbackCounter = 0;
-const callbacks = {};
-
-// === 主题 ===
-function applyTheme() {
-    const t = state.theme === 'auto' ? getAutoTheme() : state.theme;
-    document.body.classList.remove('dark', 'sepia', 'contrast');
-    if (t === 'dark') document.body.classList.add('dark');
-    else if (t === 'sepia') document.body.classList.add('sepia');
-    else if (t === 'contrast') document.body.classList.add('contrast');
-    localStorage.setItem('ice_theme', state.theme);
-    document.querySelectorAll('.theme-option').forEach(b => {
-        b.classList.toggle('active', b.dataset.theme === state.theme);
-    });
+function readJSON(key, fallback) {
+    try {
+        var raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        var v = JSON.parse(raw);
+        return v === null ? fallback : v;
+    } catch (e) { return fallback; }
 }
 
+var state = {
+    theme: 'auto',
+    editMode: false,
+    incognito: false,
+    shortcuts: readJSON('ice_shortcuts', null) || defaultShortcuts.slice(0),
+    recent: readJSON('ice_recent', [])
+};
+
+var currentEngine = 'ice';
+var lastQuery = '';
+var debounceTimer = null;
+var callbackSeq = 0;
+var callbacks = {};
+var sugItems = [];
+var sugIndex = -1;
+var longPressTimer = null;
+
+// ===================== 工具函数 =====================
+function escapeHtml(s) {
+    if (s === undefined || s === null) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+}
+
+function pad6(n) {
+    var s = Math.floor(n).toString(16);
+    while (s.length < 6) s = '0' + s;
+    return s;
+}
+
+function makeCallbackId(prefix) {
+    callbackSeq++;
+    return prefix + '_' + Date.now() + '_' + callbackSeq;
+}
+
+function showToast(msg) {
+    var toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(function () { toast.classList.remove('show'); }, 2000);
+}
+
+function isNative(method) {
+    return !!(window.IceJsBridge && window.IceJsBridge[method]);
+}
+
+// ===================== 主题 =====================
+function normalizeTheme(t) {
+    if (!t) return null;
+    var v = String(t).toLowerCase();
+    if (v === 'amoled') v = 'contrast';
+    if (v === 'light' || v === 'dark' || v === 'sepia' || v === 'contrast') return v;
+    return null;
+}
+
+var THEME_COLORS = {
+    light: '#FFFFFF',
+    dark: '#202124',
+    sepia: '#F4ECD8',
+    contrast: '#000000'
+};
+
 function getAutoTheme() {
-    if (window.IceJsBridge && window.IceJsBridge.getCurrentTheme) {
-        return window.IceJsBridge.getCurrentTheme();
-    }
+    try {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+    } catch (e) {}
     return 'light';
 }
 
+function applyTheme() {
+    var t = normalizeTheme(state.theme);
+    if (!t || state.theme === 'auto') t = getAutoTheme();
+    var body = document.body;
+    body.classList.remove('light', 'dark', 'sepia', 'contrast');
+    if (t !== 'light') body.classList.add(t);
+    var meta = document.getElementById('themeColorMeta');
+    if (meta) meta.setAttribute('content', THEME_COLORS[t] || '#1A73E8');
+    var opts = document.querySelectorAll('.theme-option');
+    for (var i = 0; i < opts.length; i++) {
+        if (opts[i].setAttribute) {
+            var dt = opts[i].getAttribute('data-theme');
+            if (dt === state.theme) opts[i].classList.add('active');
+            else opts[i].classList.remove('active');
+        }
+    }
+}
+
 function setTheme(theme) {
-    state.theme = theme;
+    var t = normalizeTheme(theme) || 'light';
+    state.theme = t;
     applyTheme();
+    try { localStorage.setItem('ice_theme', t); } catch (e) {}
+    if (isNative('setTheme')) window.IceJsBridge.setTheme(t);
     showToast('主题已切换');
 }
 
 function toggleTheme() {
-    const themes = ['light', 'dark', 'sepia', 'contrast'];
-    const idx = themes.indexOf(state.theme);
+    var themes = ['light', 'dark', 'sepia', 'contrast'];
+    var cur = normalizeTheme(state.theme);
+    if (!cur) cur = getAutoTheme();
+    var idx = themes.indexOf(cur);
     setTheme(themes[(idx + 1) % themes.length]);
 }
 
-// === 引擎 ===
-function setEngine(name) {
-    if (!engines[name]) return;
-    currentEngine = name;
-    renderEngines();
-    const e = engines[name];
-    document.getElementById('engineIcon').textContent = e.icon;
-    document.getElementById('engineIcon').style.background = e.color;
+function initTheme() {
+    var t = null;
+    if (isNative('getCurrentTheme')) {
+        try { t = normalizeTheme(window.IceJsBridge.getCurrentTheme()); } catch (e) {}
+    }
+    if (!t) t = normalizeTheme(readJSON('ice_theme', null)) || normalizeTheme(localStorage.getItem('ice_theme'));
+    if (!t) t = getAutoTheme();
+    state.theme = t;
+    applyTheme();
+}
+
+// ===================== 搜索引擎 =====================
+function normalizeEngineName(n) {
+    if (!n) return null;
+    var v = String(n).trim().toLowerCase();
+    for (var i = 0; i < engineOrder.length; i++) {
+        if (engineOrder[i].toLowerCase() === v) return engineOrder[i];
+    }
+    return null;
+}
+
+function updateEngineIcon() {
+    var e = engines[currentEngine] || engines['ice'];
+    var icon = document.getElementById('engineIcon');
+    if (icon) {
+        icon.textContent = e.icon;
+        icon.style.background = e.color;
+    }
 }
 
 function renderEngines() {
-    const tabs = document.getElementById('engineTabs');
+    var tabs = document.getElementById('engineTabs');
     if (!tabs) return;
     tabs.innerHTML = '';
-    Object.entries(engines).forEach(([key, e]) => {
-        const btn = document.createElement('button');
-        btn.className = 'engine-tab' + (key === currentEngine ? ' active' : '');
-        btn.textContent = e.name;
-        btn.onclick = () => setEngine(key);
-        tabs.appendChild(btn);
-    });
-}
-
-// === 搜索 ===
-function doSearch(event) {
-    if (event) event.preventDefault();
-    const input = document.getElementById('searchInput');
-    const query = input.value.trim();
-    if (!query) return false;
-    
-    hideSuggestions();
-    
-    if (isUrl(query)) {
-        let url = normalizeUrl(query);
-        if (window.IceJsBridge) window.IceJsBridge.loadUrl(url);
-        else window.location.href = url;
-    } else {
-        if (currentEngine === 'ice') {
-            doIceSearch(query);
-        } else {
-            const searchUrl = getExternalSearchUrl(currentEngine, query);
-            if (window.IceJsBridge) window.IceJsBridge.loadUrl(searchUrl);
-            else window.location.href = searchUrl;
-        }
+    for (var i = 0; i < engineOrder.length; i++) {
+        (function (key) {
+            var e = engines[key];
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'engine-tab' + (key === currentEngine ? ' active' : '');
+            btn.textContent = e.name;
+            btn.setAttribute('role', 'tab');
+            btn.setAttribute('aria-label', '使用 ' + e.name + ' 搜索');
+            btn.setAttribute('aria-selected', key === currentEngine ? 'true' : 'false');
+            btn.onclick = function () { setEngine(key); };
+            tabs.appendChild(btn);
+        })(engineOrder[i]);
     }
-    return false;
 }
 
-function getExternalSearchUrl(engine, query) {
-    const enc = encodeURIComponent(query);
-    if (engine === 'bing') return 'https://www.bing.com/search?q=' + enc;
-    if (engine === 'google') return 'https://www.google.com/search?q=' + enc;
-    if (engine === 'duckduckgo') return 'https://duckduckgo.com/?q=' + enc;
-    if (engine === 'baidu') return 'https://www.baidu.com/s?wd=' + enc;
-    if (engine === 'sogou') return 'https://www.sogou.com/web?query=' + enc;
-    return 'https://www.bing.com/search?q=' + enc;
+function setEngine(name) {
+    var key = normalizeEngineName(name) || 'ice';
+    currentEngine = key;
+    try { localStorage.setItem('ice_engine', key); } catch (e) {}
+    updateEngineIcon();
+    renderEngines();
+    if (isNative('setSearchEngine')) window.IceJsBridge.setSearchEngine(key);
 }
 
+function syncSearchEngine() {
+    var name = null;
+    if (isNative('getSearchEngine')) {
+        try { name = normalizeEngineName(window.IceJsBridge.getSearchEngine()); } catch (e) {}
+    }
+    if (!name) name = normalizeEngineName(localStorage.getItem('ice_engine'));
+    currentEngine = name || 'ice';
+    updateEngineIcon();
+    renderEngines();
+}
+
+// ===================== 搜索 =====================
 function isUrl(text) {
-    return /^[\\w-]+(\\.[\\w-]+)+/.test(text) && !/\s/.test(text);
+    return /^[\w-]+(\.[\w-]+)+/.test(text) && !/\s/.test(text);
 }
 
 function normalizeUrl(input) {
     return /^https?:\/\//i.test(input) ? input : 'https://' + input;
 }
 
-// === ice 搜索: 走 Java 端真实实现 ===
-function doIceSearch(query) {
-    const results = document.getElementById('results');
-    const hero = document.getElementById('hero');
-    const shortcutsSection = document.getElementById('shortcutsSection');
-    
-    if (lastQuery === query && results.dataset.cached === '1') {
-        // 缓存
-    } else {
-        results.innerHTML = '<div class="loading"><div class="spinner"></div>ice 搜索中...</div>';
-    }
-    if (hero) hero.style.display = 'none';
-    if (shortcutsSection) shortcutsSection.style.display = 'none';
-    
-    lastQuery = query;
-    const cbId = 'cb_' + (++callbackCounter);
-    callbacks[cbId] = function(json) {
-        try {
-            const data = JSON.parse(json);
-            if (data.error) {
-                results.innerHTML = '<div class="loading">搜索失败: ' + escape(data.error) + '</div>';
-                return;
-            }
-            if (!data.results || data.results.length === 0) {
-                results.innerHTML = '<div class="loading">未找到结果</div>';
-                return;
-            }
-            results.dataset.cached = '1';
-            let html = '<div style="font-size:13px;color:#5F6368;margin-bottom:16px">ice 搜索为您找到约 ' + data.total + ' 条结果</div>';
-            data.results.forEach(r => {
-                html += '<div class="result">' +
-                    '<div class="result-url"><span class="result-domain">' + escape(r.domain || '') + '</span>' + escape(r.url) + '</div>' +
-                    '<a class="result-title" href="javascript:iceNav(\'' + escape(r.url) + '\')">' + r.title + '</a>' +
-                    '<div class="result-snippet">' + r.snippet + '</div>' +
-                    '<div class="result-actions">' +
-                    '<button class="result-action" onclick="iceNav(\'' + escape(r.url) + '\')">打开</button>' +
-                    '<button class="result-action" onclick="openInNewTab(\'' + escape(r.url) + '\')">新标签打开</button>' +
-                    '</div></div>';
-            });
-            results.innerHTML = html;
-        } catch (e) {
-            results.innerHTML = '<div class="loading">解析失败</div>';
-        }
-    };
-    
-    if (window.IceJsBridge) {
-        window.IceJsBridge.search(query, cbId);
-    } else {
-        results.innerHTML = '<div class="loading">ice 搜索需要 ice 浏览器</div>';
-    }
+function externalSearchUrl(engine, query) {
+    var e = engines[engine];
+    var enc = encodeURIComponent(query);
+    if (e && e.url) return e.url + enc;
+    return 'https://www.bing.com/search?q=' + enc;
 }
 
-window.iceOnSearchResults = function(json, cbId) {
-    const cb = callbacks[cbId];
+function doSearch(event) {
+    if (event && event.preventDefault) event.preventDefault();
+    var input = document.getElementById('searchInput');
+    if (!input) return false;
+    var query = input.value.trim();
+    if (!query) return false;
+
+    hideSuggestions();
+    resetSuggestionIndex();
+
+    if (isUrl(query)) {
+        navTo(normalizeUrl(query));
+        return false;
+    }
+
+    recordRecent(query);
+
+    if (currentEngine === 'ice') {
+        doIceSearch(query);
+    } else {
+        navTo(externalSearchUrl(currentEngine, query));
+    }
+    return false;
+}
+
+function navTo(url) {
+    if (isNative('loadUrl')) window.IceJsBridge.loadUrl(url);
+    else window.location.href = url;
+}
+
+// ice 异步搜索
+function doIceSearch(query) {
+    var results = document.getElementById('results');
+    var hero = document.getElementById('hero');
+    var shortcutsSection = document.getElementById('shortcutsSection');
+
+    lastQuery = query;
+    if (hero) hero.style.display = 'none';
+    if (shortcutsSection) shortcutsSection.style.display = 'none';
+    updateRecentVisibility();
+    if (results) results.innerHTML = '<div class="loading"><div class="spinner"></div>ice 搜索中...</div>';
+
+    if (!isNative('search')) {
+        if (results) results.innerHTML = '<div class="loading">ice 搜索需要 ice 浏览器环境</div>';
+        return;
+    }
+
+    var cbId = makeCallbackId('sr');
+    callbacks[cbId] = function (json) {
+        var data;
+        try { data = JSON.parse(json); } catch (e) {
+            if (results) results.innerHTML = '<div class="loading">解析搜索结果失败</div>';
+            return;
+        }
+        if (data && data.error) {
+            if (results) results.innerHTML = '<div class="loading">搜索失败：' + escapeHtml(data.error) + '</div>';
+            return;
+        }
+        var list = (data && data.results) ? data.results : [];
+        if (!list.length) {
+            if (results) results.innerHTML = '<div class="loading">未找到与「' + escapeHtml(query) + '」相关的结果</div>';
+            return;
+        }
+        var total = (data.total === undefined || data.total === null) ? list.length : data.total;
+        var html = '<div class="results-info">ice 搜索为您找到约 ' + escapeHtml(total) + ' 条结果</div>';
+        for (var i = 0; i < list.length; i++) {
+            html += renderResultCard(list[i]);
+        }
+        if (results) results.innerHTML = html;
+    };
+    window.IceJsBridge.search(query, cbId);
+}
+
+function renderResultCard(r) {
+    r = r || {};
+    var url = r.url || '';
+    var title = r.title || url;
+    var domain = r.domain || '';
+    var snippet = r.snippet || '';
+    var color = (r.color && /^[0-9A-Fa-f]{3,8}$/.test(r.color)) ? ('#' + r.color) : '';
+    var safeUrl = escapeHtml(url);
+    return '<div class="result">' +
+        '<div class="result-url">' +
+            (domain ? '<span class="result-domain"' + (color ? ' style="background:' + color + '"' : '') + '>' + escapeHtml(domain) + '</span>' : '') +
+            '<span class="result-url-text">' + escapeHtml(url) + '</span>' +
+        '</div>' +
+        '<a class="result-title" href="javascript:void(0)" onclick="iceNav(\'' + safeUrl + '\')">' + escapeHtml(title) + '</a>' +
+        '<div class="result-snippet">' + escapeHtml(snippet) + '</div>' +
+        '<div class="result-actions">' +
+            '<button type="button" class="result-action" onclick="iceNav(\'' + safeUrl + '\')" aria-label="打开 ' + escapeHtml(title) + '">打开</button>' +
+            '<button type="button" class="result-action" onclick="openInNewTab(\'' + safeUrl + '\')" aria-label="在新标签页打开 ' + escapeHtml(title) + '">新标签打开</button>' +
+        '</div>' +
+    '</div>';
+}
+
+window.iceOnSearchResults = function (json, cbId) {
+    var cb = callbacks[cbId];
     if (cb) {
-        cb(json);
         delete callbacks[cbId];
+        cb(json);
     }
 };
 
-// === 建议 ===
+// ===================== 输入建议 =====================
 function onSearchInput() {
+    var input = document.getElementById('searchInput');
+    updateRecentVisibility();
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => requestSuggestions(document.getElementById('searchInput').value), 150);
+    debounceTimer = setTimeout(function () {
+        requestSuggestions(input ? input.value : '');
+    }, 150);
+}
+
+function onSearchFocus() {
+    var input = document.getElementById('searchInput');
+    if (input && input.value.trim()) requestSuggestions(input.value);
+    else hideSuggestions();
+    updateRecentVisibility();
 }
 
 function requestSuggestions(prefix) {
-    const cbId = 'sug_' + (++callbackCounter);
-    callbacks[cbId] = function(json) {
-        try {
-            const list = JSON.parse(json);
-            renderSuggestions(list);
-        } catch (e) {}
-    };
-    if (window.IceJsBridge) {
-        window.IceJsBridge.getSuggestions(prefix || '', cbId);
-    } else {
+    prefix = prefix || '';
+    if (!isNative('getSuggestions')) {
         renderSuggestions([]);
+        return;
     }
+    var cbId = makeCallbackId('sg');
+    callbacks[cbId] = function (json) {
+        var list;
+        try { list = JSON.parse(json); } catch (e) { list = []; }
+        if (!list || typeof list.length !== 'number') list = [];
+        renderSuggestions(list);
+    };
+    window.IceJsBridge.getSuggestions(prefix, cbId);
 }
 
-window.iceOnSuggestions = function(json, cbId) {
-    const cb = callbacks[cbId];
+window.iceOnSuggestions = function (json, cbId) {
+    var cb = callbacks[cbId];
     if (cb) {
-        cb(json);
         delete callbacks[cbId];
+        cb(json);
     }
 };
 
+function highlightPrefix(text, query) {
+    text = String(text === undefined || text === null ? '' : text);
+    if (!query) return escapeHtml(text);
+    var lower = text.toLowerCase();
+    var q = query.toLowerCase();
+    var idx = lower.indexOf(q);
+    if (idx === -1) return escapeHtml(text);
+    return escapeHtml(text.substring(0, idx)) + '<mark>' + escapeHtml(text.substring(idx, idx + query.length)) + '</mark>' + escapeHtml(text.substring(idx + query.length));
+}
+
 function renderSuggestions(list) {
-    const sug = document.getElementById('suggestions');
+    var sug = document.getElementById('suggestions');
     if (!sug) return;
-    
-    if (!list || list.length === 0) {
+    var input = document.getElementById('searchInput');
+    var query = input ? input.value : '';
+
+    if (!list || !list.length) {
+        sug.innerHTML = '';
         sug.classList.remove('show');
+        sugItems = [];
+        sugIndex = -1;
         return;
     }
-    
-    let html = '';
-    list.forEach(s => {
-        const isUrl = /^[\\w-]+\\./.test(s);
-        html += '<div class="suggestion-item" onclick="pickSuggestion(\'' + escape(s) + '\')">' +
-            '<div class="suggestion-icon">' + (isUrl ?
+
+    sugItems = list;
+    sugIndex = -1;
+    var html = '';
+    for (var i = 0; i < list.length; i++) {
+        var s = String(list[i]);
+        var looksUrl = /^[\w-]+\./.test(s) && !/\s/.test(s);
+        html += '<div class="suggestion-item" role="option" data-idx="' + i + '" onclick="pickSuggestion(' + i + ')">' +
+            '<div class="suggestion-icon">' + (looksUrl ?
                 '<svg viewBox="0 0 24 24"><path d="M3.9,12C3.9,10.29 5.29,8.9 7,8.9H11V7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H11V15.1H7C5.29,15.1 3.9,13.71 3.9,12M8,13H16V11H8V13M17,7H13V8.9H17A3.1,3.1 0 0,1 20.1,12A3.1,3.1 0 0,1 17,15.1H13V17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7Z"/></svg>' :
                 '<svg viewBox="0 0 24 24"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C7,12 7,12 7.44,13.27L9.5,15C10.59,15 11.65,14.61 12.46,13.95L12.85,13.06L13.06,12.85L13.95,12.46C14.61,11.65 15,10.59 15,9.5C15,7 13,5 9.5,5Z"/></svg>') + '</div>' +
-            '<div class="suggestion-text">' + highlight(s, document.getElementById('searchInput').value) + '</div>' +
-            (isUrl ? '<div class="suggestion-type">网址</div>' : '') +
+            '<div class="suggestion-text">' + highlightPrefix(s, query) + '</div>' +
+            (looksUrl ? '<div class="suggestion-type">网址</div>' : '') +
             '</div>';
-    });
+    }
     sug.innerHTML = html;
     sug.classList.add('show');
 }
 
-function highlight(text, query) {
-    if (!query) return escape(text);
-    const idx = text.toLowerCase().indexOf(query.toLowerCase());
-    if (idx === -1) return escape(text);
-    return escape(text.substring(0, idx)) + '<mark>' + escape(text.substring(idx, idx + query.length)) + '</mark>' + escape(text.substring(idx + query.length));
+function resetSuggestionIndex() {
+    sugIndex = -1;
+    var items = document.querySelectorAll('#suggestions .suggestion-item');
+    for (var i = 0; i < items.length; i++) items[i].classList.remove('active');
 }
 
-function pickSuggestion(text) {
-    const input = document.getElementById('searchInput');
-    input.value = text;
+function onSearchKeydown(e) {
+    var key = e.key;
+    if (key === 'Escape') {
+        hideSuggestions();
+        resetSuggestionIndex();
+        return;
+    }
+    var items = document.querySelectorAll('#suggestions .suggestion-item');
+    if (!items.length) {
+        if (key === 'Enter') { /* 交给表单提交 */ }
+        return;
+    }
+    if (key === 'ArrowDown') {
+        e.preventDefault();
+        sugIndex = (sugIndex + 1) % items.length;
+        syncSuggestionActive(items);
+    } else if (key === 'ArrowUp') {
+        e.preventDefault();
+        sugIndex = sugIndex <= 0 ? items.length - 1 : sugIndex - 1;
+        syncSuggestionActive(items);
+    } else if (key === 'Enter') {
+        if (sugIndex >= 0 && sugIndex < items.length) {
+            e.preventDefault();
+            pickSuggestion(sugIndex);
+        }
+    }
+}
+
+function syncSuggestionActive(items) {
+    for (var i = 0; i < items.length; i++) {
+        if (i === sugIndex) items[i].classList.add('active');
+        else items[i].classList.remove('active');
+    }
+}
+
+function pickSuggestion(idx) {
+    var text = sugItems[idx];
+    if (text === undefined || text === null) return;
+    var input = document.getElementById('searchInput');
+    if (input) input.value = text;
     hideSuggestions();
+    resetSuggestionIndex();
     doSearch();
 }
 
-function showSuggestions() {
-    requestSuggestions(document.getElementById('searchInput').value);
-}
-
 function hideSuggestions() {
-    const sug = document.getElementById('suggestions');
+    var sug = document.getElementById('suggestions');
     if (sug) sug.classList.remove('show');
 }
 
-document.addEventListener('click', e => {
-    if (!e.target.closest('.search-container')) hideSuggestions();
+document.addEventListener('click', function (e) {
+    var t = e.target;
+    var inside = false;
+    while (t && t !== document) {
+        if (t.className && typeof t.className === 'string' && t.className.indexOf('search-container') !== -1) { inside = true; break; }
+        t = t.parentNode;
+    }
+    if (!inside) hideSuggestions();
 });
 
-// === 快捷方式 ===
+// ===================== 最近搜索 =====================
+function saveRecent() {
+    try { localStorage.setItem('ice_recent', JSON.stringify(state.recent)); } catch (e) {}
+}
+
+function recordRecent(q) {
+    if (state.incognito) return;
+    q = (q || '').trim();
+    if (!q) return;
+    var next = [];
+    for (var i = 0; i < state.recent.length; i++) {
+        if (state.recent[i] !== q) next.push(state.recent[i]);
+    }
+    next.unshift(q);
+    if (next.length > 12) next = next.slice(0, 12);
+    state.recent = next;
+    saveRecent();
+    renderRecent();
+}
+
+function removeRecent(q) {
+    if (state.incognito) return;
+    var next = [];
+    for (var i = 0; i < state.recent.length; i++) {
+        if (state.recent[i] !== q) next.push(state.recent[i]);
+    }
+    state.recent = next;
+    saveRecent();
+    renderRecent();
+}
+
+function clearRecent() {
+    if (state.incognito) return;
+    state.recent = [];
+    saveRecent();
+    renderRecent();
+    showToast('已清空最近搜索');
+}
+
+function renderRecent() {
+    var section = document.getElementById('recentSection');
+    var list = document.getElementById('recentList');
+    if (!section || !list) return;
+    if (state.incognito || !state.recent.length) {
+        section.style.display = 'none';
+        list.innerHTML = '';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < state.recent.length; i++) {
+        var q = state.recent[i];
+        html += '<button type="button" class="recent-chip" onclick="pickRecent(' + i + ')" aria-label="搜索 ' + escapeHtml(q) + '">' +
+            '<span class="recent-text">' + escapeHtml(q) + '</span>' +
+            '<span class="recent-del" role="button" tabindex="0" aria-label="删除 ' + escapeHtml(q) + '" onclick="event.stopPropagation();removeRecentAt(' + i + ')">\u00D7</span>' +
+            '</button>';
+    }
+    list.innerHTML = html;
+    updateRecentVisibility();
+}
+
+function pickRecent(i) {
+    var q = state.recent[i];
+    if (q === undefined) return;
+    var input = document.getElementById('searchInput');
+    if (input) input.value = q;
+    doSearch();
+}
+
+function removeRecentAt(i) {
+    var q = state.recent[i];
+    if (q === undefined) return;
+    removeRecent(q);
+}
+
+function updateRecentVisibility() {
+    var section = document.getElementById('recentSection');
+    if (!section) return;
+    var input = document.getElementById('searchInput');
+    var hasText = input && input.value.trim().length > 0;
+    var show = !state.incognito && !hasText && state.recent.length > 0;
+    section.style.display = show ? 'block' : 'none';
+}
+
+// ===================== 快捷方式 =====================
+function saveShortcuts() {
+    try { localStorage.setItem('ice_shortcuts', JSON.stringify(state.shortcuts)); } catch (e) {}
+}
+
 function renderShortcuts() {
-    const grid = document.getElementById('shortcutsGrid');
+    var grid = document.getElementById('shortcutsGrid');
     if (!grid) return;
     grid.innerHTML = '';
-    state.shortcuts.slice(0, 8).forEach((s, i) => {
-        const btn = document.createElement('button');
-        btn.className = 'shortcut' + (state.editMode ? ' edit-mode' : '');
-        btn.onclick = () => {
-            if (state.editMode) {
-                state.shortcuts.splice(i, 1);
-                localStorage.setItem('ice_shortcuts', JSON.stringify(state.shortcuts));
-                renderShortcuts();
-            } else {
-                iceNav(s.url);
+    for (var i = 0; i < state.shortcuts.length; i++) {
+        (function (idx) {
+            var s = state.shortcuts[idx];
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'shortcut' + (state.editMode ? ' edit-mode' : '');
+            btn.setAttribute('aria-label', '打开 ' + s.name);
+            btn.innerHTML = '<span class="shortcut-del" role="button" aria-label="删除 ' + escapeHtml(s.name) + '">\u00D7</span>' +
+                '<div class="shortcut-icon" style="background:' + escapeHtml(s.color) + '">' + escapeHtml(s.icon) + '</div>' +
+                '<div class="shortcut-name">' + escapeHtml(s.name) + '</div>';
+            btn.onclick = function () {
+                if (state.editMode) removeShortcut(idx, true);
+                else iceNav(s.url);
+            };
+            var del = btn.querySelector('.shortcut-del');
+            if (del) {
+                del.onclick = function (ev) {
+                    if (ev && ev.stopPropagation) ev.stopPropagation();
+                    removeShortcut(idx, false);
+                };
             }
-        };
-        btn.innerHTML = '<div class="shortcut-icon" style="background:' + s.color + '">' + s.icon + '</div>' +
-            '<div class="shortcut-name">' + escape(s.name) + '</div>';
-        grid.appendChild(btn);
-    });
-    // 添加
-    const add = document.createElement('button');
+            btn.addEventListener('touchstart', function () { startLongPress(idx); });
+            btn.addEventListener('touchend', cancelLongPress);
+            btn.addEventListener('touchmove', cancelLongPress);
+            btn.addEventListener('touchcancel', cancelLongPress);
+            grid.appendChild(btn);
+        })(i);
+    }
+    var add = document.createElement('button');
+    add.type = 'button';
     add.className = 'shortcut add-shortcut';
+    add.setAttribute('aria-label', '添加快捷方式');
     add.onclick = addShortcut;
     add.innerHTML = '<div class="shortcut-icon add-shortcut-icon">+</div><div class="shortcut-name">添加</div>';
     grid.appendChild(add);
 }
 
+function startLongPress(idx) {
+    cancelLongPress();
+    longPressTimer = setTimeout(function () {
+        longPressTimer = null;
+        removeShortcut(idx, false);
+    }, 650);
+}
+
+function cancelLongPress() {
+    if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+    }
+}
+
+function removeShortcut(idx, silent) {
+    if (idx < 0 || idx >= state.shortcuts.length) return;
+    state.shortcuts.splice(idx, 1);
+    saveShortcuts();
+    renderShortcuts();
+    if (!silent) showToast('已删除快捷方式');
+}
+
 function toggleEditMode() {
     state.editMode = !state.editMode;
-    const el = document.getElementById('edit_link');
+    var el = document.getElementById('edit_link');
     if (el) el.textContent = state.editMode ? '完成' : '编辑';
     renderShortcuts();
-    showToast(state.editMode ? '点击移除, 点 + 添加' : '已退出编辑');
+    showToast(state.editMode ? '点击站点移除，点 + 添加' : '已退出编辑');
 }
 
 function addShortcut() {
-    const url = prompt('网址 (例: example.com)');
+    var url = prompt('网址（例：example.com）');
     if (!url) return;
-    const name = prompt('名称', url.replace(/^https?:\/\//, '').split('/')[0]) || '新网站';
-    const color = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
-    const icon = name.charAt(0).toUpperCase();
-    state.shortcuts.unshift({ name, url: normalizeUrl(url), icon, color });
-    if (state.shortcuts.length > 8) state.shortcuts = state.shortcuts.slice(0, 8);
-    localStorage.setItem('ice_shortcuts', JSON.stringify(state.shortcuts));
+    var guess = String(url).replace(/^https?:\/\//i, '').split('/')[0];
+    var name = prompt('名称', guess) || guess || '新网站';
+    var icon = String(name).charAt(0).toUpperCase();
+    var color = '#' + pad6(Math.random() * 16777215);
+    state.shortcuts.unshift({ name: name, url: normalizeUrl(url), icon: icon, color: color });
+    saveShortcuts();
     renderShortcuts();
+    showToast('已添加快捷方式');
 }
 
-// === 抽屉 ===
+// ===================== 抽屉 =====================
 function toggleDrawer() {
-    document.getElementById('drawer').classList.toggle('show');
-    document.getElementById('drawerOverlay').classList.toggle('show');
+    var drawer = document.getElementById('drawer');
+    var overlay = document.getElementById('drawerOverlay');
+    if (!drawer || !overlay) return;
+    var open = !drawer.classList.contains('show');
+    if (open) {
+        drawer.classList.add('show');
+        overlay.classList.add('show');
+        loadDrawerPreviews();
+    } else {
+        closeDrawer();
+    }
 }
 
 function closeDrawer() {
-    document.getElementById('drawer').classList.remove('show');
-    document.getElementById('drawerOverlay').classList.remove('show');
+    var drawer = document.getElementById('drawer');
+    var overlay = document.getElementById('drawerOverlay');
+    if (drawer) drawer.classList.remove('show');
+    if (overlay) overlay.classList.remove('show');
 }
 
-// === Tab 操作 (走 JS Bridge) ===
+function loadDrawerPreviews() {
+    renderDrawerPreview('drawerHistorySection', 'drawerHistory', 'history');
+    renderDrawerPreview('drawerBookmarkSection', 'drawerBookmarks', 'bookmarks');
+}
+
+function renderDrawerPreview(sectionId, listId, kind) {
+    var section = document.getElementById(sectionId);
+    var list = document.getElementById(listId);
+    if (!section || !list) return;
+    var items = [];
+    var method = kind === 'history' ? 'getHistory' : 'getBookmarks';
+    if (isNative(method)) {
+        try {
+            items = JSON.parse(window.IceJsBridge[method]() || '[]');
+        } catch (e) { items = []; }
+    }
+    if (!items || !items.length) {
+        section.style.display = 'none';
+        list.innerHTML = '';
+        return;
+    }
+    var html = '';
+    var limit = Math.min(items.length, 5);
+    for (var i = 0; i < limit; i++) {
+        var it = items[i] || {};
+        var url = it.url || '';
+        if (!url) continue;
+        var title = it.title || url;
+        html += '<button type="button" class="drawer-list-item" onclick="iceNav(\'' + escapeHtml(url) + '\')" aria-label="打开 ' + escapeHtml(title) + '">' +
+            escapeHtml(title) +
+            '</button>';
+    }
+    if (!html) {
+        section.style.display = 'none';
+        return;
+    }
+    list.innerHTML = html;
+    section.style.display = 'block';
+}
+
+// ===================== Tab / 导航 =====================
 function newTab() {
-    if (window.IceJsBridge) window.IceJsBridge.newTab('about:blank');
+    if (isNative('newTab')) window.IceJsBridge.newTab('about:blank');
     closeDrawer();
 }
 
 function newIncognitoTab() {
-    if (window.IceJsBridge) window.IceJsBridge.newTab('about:blank?incognito');
+    if (isNative('newTab')) window.IceJsBridge.newTab('about:blank?incognito');
     closeDrawer();
 }
 
 function showTabs() {
-    if (window.IceJsBridge) window.IceJsBridge.showTabs();
+    if (isNative('showTabs')) window.IceJsBridge.showTabs();
     closeDrawer();
 }
 
 function openInNewTab(url) {
-    if (window.IceJsBridge) window.IceJsBridge.newTab(url);
+    if (isNative('newTab')) window.IceJsBridge.newTab(url);
 }
 
-// === 工具 ===
 function iceNav(url) {
-    if (window.IceJsBridge) window.IceJsBridge.loadUrl(url);
+    if (isNative('loadUrl')) window.IceJsBridge.loadUrl(url);
     else window.location.href = url;
 }
 
-function showToast(msg) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2000);
+function openHistory() {
+    if (isNative('openHistory')) window.IceJsBridge.openHistory();
+    else iceNav('file:///android_asset/history.html');
+    closeDrawer();
 }
 
-function escape(s) {
-    if (!s) return '';
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+function openBookmarks() {
+    if (isNative('openBookmarks')) window.IceJsBridge.openBookmarks();
+    else iceNav('file:///android_asset/bookmarks.html');
+    closeDrawer();
 }
 
-// === 菜单动作 ===
-function addBookmark() {
-    if (window.IceJsBridge) {
-        window.IceJsBridge.addBookmark();
+function openDownloads() {
+    if (isNative('openDownloads')) window.IceJsBridge.openDownloads();
+    else iceNav('file:///android_asset/downloads.html');
+    closeDrawer();
+}
+
+function openSettings() {
+    if (isNative('openSettings')) window.IceJsBridge.openSettings();
+    closeDrawer();
+}
+
+// ===================== 书签状态 =====================
+function updateBookmarkState() {
+    var btn = document.getElementById('bmBtn');
+    var label = document.getElementById('drawerBookmarkLabel');
+    var on = false;
+    if (isNative('isBookmarked')) {
+        try { on = !!window.IceJsBridge.isBookmarked(); } catch (e) {}
+    }
+    if (btn) {
+        if (on) btn.classList.add('bm-on');
+        else btn.classList.remove('bm-on');
+    }
+    var path = document.getElementById('bmPath');
+    if (path) {
+        path.setAttribute('d', on ?
+            'M17,3H7C5.89,3 5,3.9 5,5V21L12,18L19,21V5C19,3.9 18.11,3 17,3Z' :
+            'M17,3H7C5.89,3 5,3.9 5,5V21L12,18L19,21V5C19,3.9 18.11,3 17,3M17,5V18L12,15.82L7,18V5H17Z');
+    }
+    if (label) label.textContent = on ? '已收藏（点击移除）' : '添加书签';
+}
+
+function toggleBookmark() {
+    var on = false;
+    if (isNative('isBookmarked')) {
+        try { on = !!window.IceJsBridge.isBookmarked(); } catch (e) {}
+    }
+    if (on) {
+        if (isNative('removeBookmark')) window.IceJsBridge.removeBookmark();
+        showToast('已移除书签');
+    } else {
+        if (isNative('addBookmark')) window.IceJsBridge.addBookmark();
+        showToast('已添加书签');
+    }
+    setTimeout(updateBookmarkState, 150);
+    closeDrawer();
+}
+
+// ===================== 工具 =====================
+function showTranslate() {
+    if (isNative('loadUrl')) window.IceJsBridge.loadUrl('file:///android_asset/translate.html');
+    closeDrawer();
+}
+
+function openTranslate() {
+    var text = prompt('输入要翻译的文本：');
+    if (!text) return;
+    if (playUrlSafe('https://www.bing.com/translator/?text=' + encodeURIComponent(text))) return;
+}
+
+function playUrlSafe(url) {
+    if (isNative('loadUrl')) { window.IceJsBridge.loadUrl(url); return true; }
+    return false;
+}
+
+function enterReaderMode() {
+    var script = "(function(){" +
+        "var a=document.querySelector('article')||document.querySelector('main')||document.body;" +
+        "var t=document.title;var text=a?a.innerText:document.body.innerText;" +
+        "var html='<html><head><meta charset=\"utf-8\"><style>body{font-size:18px;line-height:1.7;padding:30px;max-width:720px;margin:0 auto;font-family:sans-serif;color:#222}h1{font-size:26px;margin-bottom:20px;color:#1A73E8}</style></head><body><h1>'+t+'</h1><div>'+text.replace(/\\n/g,'<br>')+'</div></body></html>';" +
+        "document.write(html);})()";
+    if (isNative('readerMode')) window.IceJsBridge.readerMode();
+    else if (isNative('loadUrl')) window.IceJsBridge.loadUrl('javascript:' + encodeURIComponent(script));
+    closeDrawer();
+}
+
+function toggleDesktop() {
+    if (isNative('toggleDesktop')) window.IceJsBridge.toggleDesktop();
+    else if (isNative('showToast')) window.IceJsBridge.showToast('已切换桌面版');
+    closeDrawer();
+}
+
+function findInPage() {
+    if (isNative('findInPage')) window.IceJsBridge.findInPage();
+    else if (isNative('loadUrl')) {
+        var js = "(function(){var b=document.createElement('div');b.id='__ice_f';b.style.cssText='position:fixed;top:0;left:0;right:0;height:48px;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;padding:0 8px;gap:8px;color:white';b.innerHTML='<input id=\"__ice_fi\" style=\"flex:1;height:36px;padding:0 12px;border-radius:18px;border:none;background:rgba(255,255,255,0.2);color:white;font-size:14px\" placeholder=\"查找\"/><button onclick=\"document.getElementById(\\'__ice_f\\').remove()\" style=\"background:transparent;color:white;border:none;padding:8px;font-size:18px\">\u00D7</button>';document.body.appendChild(b);var i=document.getElementById('__ice_fi');i.focus();i.oninput=function(){if(window.find){window.find(this.value);}};})()";
+        window.IceJsBridge.loadUrl('javascript:' + encodeURIComponent(js));
     }
     closeDrawer();
 }
 
 function sharePage() {
-    if (window.IceJsBridge) {
-        window.IceJsBridge.share();
-    }
-    closeDrawer();
-}
-
-function enterReaderMode() {
-    if (window.IceJsBridge) {
-        window.IceJsBridge.loadUrl('javascript:void(0)');  // 先停当前
-    }
-    setTimeout(() => {
-        const script = "(function(){" +
-            "var a=document.querySelector('article')||document.querySelector('main')||document.body;" +
-            "var t=document.title;var text=a?a.innerText:document.body.innerText;" +
-            "var html='<html><head><meta charset=\"utf-8\"><style>body{font-size:18px;line-height:1.7;padding:30px;max-width:720px;margin:0 auto;font-family:sans-serif;color:#222}h1{font-size:26px;margin-bottom:20px;color:#1A73E8}</style></head><body><h1>'+t+'</h1><div>'+text.replace(/\\n/g,'<br>')+'</div></body></html>';" +
-            "document.write(html);})()";
-        if (window.IceJsBridge) {
-            window.IceJsBridge.loadUrl('javascript:' + encodeURIComponent(script));
-        }
-    }, 100);
-    closeDrawer();
-}
-
-function toggleDesktop() {
-    if (window.IceJsBridge) {
-        const newUrl = window.location.href;
-        // 切换 UA 通过 reload 实现 (实际由 MainActivity 处理)
-        if (window.IceJsBridge.showToast) {
-            window.IceJsBridge.showToast('已切换桌面版');
-        }
-    }
-    closeDrawer();
-}
-
-function findInPage() {
-    if (window.IceJsBridge) {
-        // 注入 find UI
-        if (window.IceJsBridge.loadUrl) {
-            const js = "(function(){var b=document.createElement('div');b.id='__ice_f';b.style.cssText='position:fixed;top:0;left:0;right:0;height:48px;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;padding:0 8px;gap:8px;color:white';b.innerHTML='<input id=\"__ice_fi\" style=\"flex:1;height:36px;padding:0 12px;border-radius:18px;border:none;background:rgba(255,255,255,0.2);color:white;font-size:14px\" placeholder=\"查找\"/><span id=\"__ice_fc\" style=\"font-size:13px;min-width:48px;text-align:center\">0</span><button onclick=\"document.getElementById(\\'__ice_f\\').remove()\" style=\"background:transparent;color:white;border:none;padding:8px;font-size:18px\">×</button>';document.body.appendChild(b);var i=document.getElementById('__ice_fi');i.focus();i.oninput=function(){if(window.find){window.find(this.value);}var c=document.getElementById('__ice_fc');c.textContent=this.value?'已输入':0;};})()";
-            window.IceJsBridge.loadUrl('javascript:' + encodeURIComponent(js));
-        }
-    }
-    closeDrawer();
-}
-
-function openTranslate() {
-    const text = prompt('输入要翻译的文本:');
-    if (!text) return;
-    if (window.IceJsBridge) {
-        // 跳到 Bing 翻译
-        window.IceJsBridge.loadUrl('https://www.bing.com/translator/?text=' + encodeURIComponent(text));
-    }
-    closeDrawer();
-}
-
-function openSettings() {
-    if (window.IceJsBridge) window.IceJsBridge.openSettings();
+    if (isNative('share')) window.IceJsBridge.share();
     closeDrawer();
 }
 
 function showAbout() {
-    if (window.IceJsBridge) window.IceJsBridge.loadUrl('file:///android_asset/about.html');
+    if (isNative('loadUrl')) window.IceJsBridge.loadUrl('file:///android_asset/about.html');
     closeDrawer();
 }
 
+// ===================== Tab 计数 =====================
 function updateTabCount(n) {
-    const el = document.getElementById('tab_count');
+    n = (n === undefined || n === null) ? 1 : n;
+    var el = document.getElementById('tab_count');
     if (el) el.textContent = n;
-    const el2 = document.getElementById('tab_count_drawer');
+    var el2 = document.getElementById('tab_count_drawer');
     if (el2) el2.textContent = n;
 }
 
-// === 启动 ===
-renderEngines();
-renderShortcuts();
-applyTheme();
-updateTabCount(window.IceJsBridge ? window.IceJsBridge.getTabCount() : 1);
+// ===================== URL 参数 =====================
+function parseLocationParams() {
+    var out = {};
+    var qs = window.location.search || '';
+    if (qs.charAt(0) === '?') qs = qs.substring(1);
+    if (!qs) return out;
+    var pairs = qs.split('&');
+    for (var i = 0; i < pairs.length; i++) {
+        if (!pairs[i]) continue;
+        var eq = pairs[i].indexOf('=');
+        var k, v;
+        if (eq === -1) { k = pairs[i]; v = ''; }
+        else { k = pairs[i].substring(0, eq); v = pairs[i].substring(eq + 1); }
+        try { out[decodeURIComponent(k)] = decodeURIComponent(v.replace(/\+/g, ' ')); }
+        catch (e) { out[k] = v; }
+    }
+    return out;
+}
+
+function applyIncognito(on) {
+    state.incognito = !!on;
+    if (state.incognito) {
+        document.body.classList.add('incognito');
+        var sub = document.getElementById('drawerSubtitle');
+        if (sub) sub.textContent = 'v5.0 · 无痕模式 · 不记录搜索';
+    } else {
+        document.body.classList.remove('incognito');
+    }
+    renderRecent();
+    updateRecentVisibility();
+}
+
+// ===================== 启动 =====================
+function init() {
+    syncSearchEngine();
+    renderShortcuts();
+
+    initTheme();
+
+    var params = parseLocationParams();
+    var incognito = (params.mode === 'incognito');
+    if (!incognito && isNative('isIncognito')) {
+        try { incognito = !!window.IceJsBridge.isIncognito(); } catch (e) {}
+    }
+    applyIncognito(incognito);
+
+    renderRecent();
+    updateTabCount(isNative('getTabCount') ? window.IceJsBridge.getTabCount() : 1);
+    updateBookmarkState();
+
+    // 桌面端才自动聚焦，避免移动端弹出键盘
+    try {
+        if (window.matchMedia && window.matchMedia('(min-width: 768px)').matches) {
+            var input = document.getElementById('searchInput');
+            if (input) input.focus();
+        }
+    } catch (e) {}
+
+    // ?q= 自动搜索
+    if (params.q) {
+        var input2 = document.getElementById('searchInput');
+        if (input2) input2.value = params.q;
+        doSearch();
+    }
+}
+
+init();
 </script>
 
 </body>

@@ -1,68 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  标签页列表。
+  颜色全部走 ?attr/iceXxx，由当前主题提供，切换主题后自动跟随。
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#202124">
+    android:background="?attr/iceToolbarBg"
+    android:orientation="vertical">
 
     <!-- 顶栏 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="#1A1A1A"
-        android:orientation="horizontal"
+        android:background="?attr/iceToolbarBg"
+        android:elevation="4dp"
         android:gravity="center_vertical"
-        android:paddingHorizontal="8dp">
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="4dp">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="标签页"
-            android:textColor="#FFFFFF"
+            android:gravity="start"
+            android:paddingStart="4dp"
+            android:text="@string/tabs"
+            android:textColor="?attr/iceToolbarFg"
             android:textSize="18sp"
-            android:gravity="center" />
+            android:textStyle="bold" />
 
         <ImageButton
             android:id="@+id/btn_new_tab"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_add"
-            android:tint="#FFFFFF"
+            android:contentDescription="@string/new_tab"
             android:padding="8dp"
-            android:contentDescription="新建标签" />
+            android:src="@drawable/ic_add"
+            android:tint="?attr/iceIconTint" />
 
         <ImageButton
             android:id="@+id/btn_incognito"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_incognito"
-            android:tint="#FFFFFF"
+            android:contentDescription="@string/incognito_tab"
             android:padding="8dp"
-            android:contentDescription="无痕标签" />
+            android:src="@drawable/ic_incognito"
+            android:tint="?attr/iceIconTint" />
 
         <ImageButton
             android:id="@+id/btn_close_all"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_delete"
-            android:tint="#FFFFFF"
+            android:contentDescription="@string/close_others"
             android:padding="8dp"
-            android:contentDescription="关闭其他" />
+            android:src="@drawable/ic_delete"
+            android:tint="?attr/iceIconTint" />
 
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/iceDivider" />
 
     <GridView
         android:id="@+id/tabs_grid"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:horizontalSpacing="8dp"
         android:numColumns="2"
         android:padding="8dp"
-        android:verticalSpacing="8dp"
-        android:horizontalSpacing="8dp" />
+        android:verticalSpacing="8dp" />
 
 </LinearLayout>

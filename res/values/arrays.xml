@@ -1,18 +1,23 @@
 <resources>
+    <!-- 顺序与 ThemeManager.ALL 保持一致 -->
     <string-array name="theme_entries">
         <item>跟随系统</item>
         <item>浅色</item>
         <item>深色</item>
         <item>纯黑</item>
+        <item>护眼</item>
     </string-array>
     <string-array name="theme_values">
         <item>auto</item>
         <item>light</item>
         <item>dark</item>
         <item>amoled</item>
+        <item>sepia</item>
     </string-array>
 
+    <!-- 顺序与 Constants.ENGINE_NAMES 保持一致 -->
     <string-array name="search_engine_entries">
+        <item>ice 自研</item>
         <item>Bing</item>
         <item>Google</item>
         <item>DuckDuckGo</item>
@@ -20,6 +25,7 @@
         <item>搜狗</item>
     </string-array>
     <string-array name="search_engine_values">
+        <item>ice</item>
         <item>Bing</item>
         <item>Google</item>
         <item>DuckDuckGo</item>

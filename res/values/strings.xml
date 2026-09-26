@@ -17,7 +17,12 @@
     <string name="open_in_new_tab">在新标签打开</string>
     <string name="close_tab">关闭标签</string>
     <string name="new_tab">新标签</string>
+    <string name="incognito_tab">无痕标签</string>
+    <string name="close_others">关闭其他</string>
     <string name="close_all_tabs">关闭所有标签</string>
+    <string name="font_decrease">减小字体</string>
+    <string name="font_increase">增大字体</string>
+    <string name="translate">翻译</string>
     
     <!-- Toolbar -->
     <string name="back">后退</string>
@@ -74,6 +79,7 @@
     <string name="theme_light">浅色</string>
     <string name="theme_dark">深色</string>
     <string name="theme_amoled">纯黑</string>
+    <string name="theme_sepia">护眼</string>
     
     <!-- Downloads -->
     <string name="download_started">下载已开始</string>
