@@ -158,10 +158,4 @@
         <item name="android:maxHeight">3dp</item>
     </style>
 
-    <!-- 列表行 -->
-    <style name="Widget.IceBrowser.ListItem">
-        <item name="android:background">?android:attr/selectableItemBackground</item>
-        <item name="android:minHeight">56dp</item>
-    </style>
-
-</resources>
+    </resources>
