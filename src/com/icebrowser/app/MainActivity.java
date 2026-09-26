@@ -83,9 +83,9 @@ public class MainActivity extends Activity implements TabsManager.TabsListener {
             tabsManager.setJsBridge(new IceJsBridge(this));
             staticTabsManager = tabsManager;
 
-            // 恢复上次会话；没有可恢复的标签时开一个主页
-            if (savedInstanceState == null) tabsManager.restoreState();
-            else tabsManager.restoreState();
+            // 恢复上次会话；restoreState 自带幂等标志，重复调用无副作用。
+            // 若没有可恢复的标签，下面会开一个主页。
+            tabsManager.restoreState();
 
             handleIntent(getIntent());
             if (tabsManager.getTabCount() == 0) {
@@ -508,6 +508,8 @@ public class MainActivity extends Activity implements TabsManager.TabsListener {
                 tabsManager.destroy();
             }
         } catch (Exception ignored) {}
+        // 搜索服务持有常驻线程池，必须随 Activity 一起释放，否则每次重建都泄漏 3 个线程
+        if (searchService != null) searchService.shutdown();
         tabsManager = null;
         staticTabsManager = null;
     }
@@ -568,7 +570,11 @@ public class MainActivity extends Activity implements TabsManager.TabsListener {
             popup.setContentView(menuView);
             popup.setWidth(230 * density);
             popup.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-            popup.setBackgroundDrawable(getResources().getDrawable(R.drawable.menu_background));
+            // menu_background 里用了 ?attr/iceToolbarBg 等主题属性，
+            // getResources().getDrawable(int) 不套用 Activity 主题，会解析失败，
+            // 异常被下面的 catch 吞掉后 showAsDropDown 就永远执行不到 —— 菜单点不开。
+            // 直接复用 menuView 已经按主题设好的背景。
+            popup.setBackgroundDrawable(menuView.getBackground());
             popup.setOutsideTouchable(true);
             popup.setFocusable(true);
 
@@ -975,17 +981,23 @@ public class MainActivity extends Activity implements TabsManager.TabsListener {
 
         @android.webkit.JavascriptInterface
         public void search(final String query, final String callbackId) {
+            // 搜索是真异步的（后台线程 + 最长 8s）。必须记住「发起搜索的那个标签」：
+            // 若在结果返回前用户切了标签，旧的写法会把结果注入到另一个网页上，
+            // 而 iceOnSearchResults 只定义在主页 —— 那次搜索就永远转圈不出结果。
+            final TabsManager.Tab origin = current();
+            if (origin == null || origin.webView == null) return;
+            final WebView originView = origin.webView;
             searchService.search(query, new IceSearchService.SearchCallback() {
                 @Override
                 public void onResults(final String json) {
                     runOnUiThread(new Runnable() {
                         @Override public void run() {
-                            TabsManager.Tab tab = current();
-                            if (tab == null || tab.webView == null) return;
+                            // 发起搜索的标签可能已被关闭，此时丢弃结果
+                            if (tabsManager == null || tabsManager.indexOf(origin) < 0) return;
                             String js = "if(window.iceOnSearchResults)window.iceOnSearchResults('"
                                     + MainActivity.escapeJsStatic(json) + "','"
                                     + MainActivity.escapeJsStatic(callbackId) + "');";
-                            tab.webView.evaluateJavascript(js, null);
+                            originView.evaluateJavascript(js, null);
                         }
                     });
                 }
@@ -994,13 +1006,15 @@ public class MainActivity extends Activity implements TabsManager.TabsListener {
 
         @android.webkit.JavascriptInterface
         public void getSuggestions(final String prefix, final String callbackId) {
+            final TabsManager.Tab origin = current();
+            if (origin == null || origin.webView == null) return;
+            final WebView originView = origin.webView;
             searchService.getSuggestions(prefix, new IceSearchService.SuggestionCallback() {
                 @Override
                 public void onSuggestions(final java.util.List<String> suggestions) {
                     runOnUiThread(new Runnable() {
                         @Override public void run() {
-                            TabsManager.Tab tab = current();
-                            if (tab == null || tab.webView == null) return;
+                            if (tabsManager == null || tabsManager.indexOf(origin) < 0) return;
                             StringBuilder json = new StringBuilder("[");
                             for (int i = 0; i < suggestions.size(); i++) {
                                 if (i > 0) json.append(',');
@@ -1010,7 +1024,7 @@ public class MainActivity extends Activity implements TabsManager.TabsListener {
                             String js = "if(window.iceOnSuggestions)window.iceOnSuggestions('"
                                     + MainActivity.escapeJsStatic(json.toString()) + "','"
                                     + MainActivity.escapeJsStatic(callbackId) + "');";
-                            tab.webView.evaluateJavascript(js, null);
+                            originView.evaluateJavascript(js, null);
                         }
                     });
                 }

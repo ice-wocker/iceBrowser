@@ -136,9 +136,14 @@ public class IceWebViewClient extends WebViewClient {
         super.onPageStarted(view, url, favicon);
         TabsManager.Tab tab = tabsManager != null ? tabsManager.findByWebView(view) : null;
         if (tab != null) {
+            // showErrorPage 用 loadDataWithBaseURL 加载错误页时会再触发一次 onPageStarted，
+            // 不能无条件清掉 errorPage，否则 onPageFinished 会把失败地址当成正常页面
+            // 写进历史、并用错误页标题覆盖 tab.title。
+            boolean isErrorPageLoad = tab.pendingErrorPage;
+            tab.pendingErrorPage = false;
+            if (!isErrorPageLoad) tab.errorPage = false;
             tab.url = url;
             tab.loading = true;
-            tab.errorPage = false;
         }
         if (tabsManager != null) tabsManager.notifyTabChanged();
     }
@@ -189,6 +194,7 @@ public class IceWebViewClient extends WebViewClient {
         TabsManager.Tab tab = tabsManager != null ? tabsManager.findByWebView(view) : null;
         if (tab != null) {
             tab.errorPage = true;
+            tab.pendingErrorPage = true;
             tab.loading = false;
         }
         try {

@@ -4,6 +4,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.webkit.CookieManager;
 import android.webkit.URLUtil;
@@ -59,7 +60,11 @@ public final class DownloadService {
             if (userAgent != null) req.addRequestHeader("User-Agent", userAgent);
             String cookie = CookieManager.getInstance().getCookie(url);
             if (cookie != null) req.addRequestHeader("Cookie", cookie);
-            req.setAllowedOverMetered(true);
+            // setAllowedOverMetered 是 API 24 才有的方法。在 API 21~23 上直接调用会抛
+            // NoSuchMethodError——它是 Error 而非 Exception，外层 catch(Exception) 拦不住，会崩。
+            if (Build.VERSION.SDK_INT >= 24) {
+                req.setAllowedOverMetered(true);
+            }
             req.setAllowedOverRoaming(true);
 
             DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);

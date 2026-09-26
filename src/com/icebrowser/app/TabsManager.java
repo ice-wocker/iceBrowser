@@ -80,6 +80,8 @@ public class TabsManager {
         public boolean desktopMode;
         /** 当前显示的是内置错误页，用于避免把失败地址写进历史。 */
         public boolean errorPage;
+        /** 即将加载的是内置错误页，onPageStarted 需要据此保留 errorPage 标志。 */
+        public boolean pendingErrorPage;
         public int progress;
         public long createdAt;
         public long lastActiveAt;
@@ -479,8 +481,10 @@ public class TabsManager {
         }
         try {
             CookieManager cm = CookieManager.getInstance();
-            cm.setAcceptCookie(!t.incognito
-                    && IcePrefs.getBool(activity, IcePrefs.KEY_COOKIES_ENABLED, true));
+            // setAcceptCookie 是进程级全局开关，不按 WebView 生效。
+            // 原实现把它写在「逐标签循环」里并带上 !t.incognito，最终值由最后一个标签决定：
+            // 只要存在无痕标签且排在后面，所有普通标签都会一起停止接受 Cookie（登录态莫名失效）。
+            cm.setAcceptCookie(IcePrefs.getBool(activity, IcePrefs.KEY_COOKIES_ENABLED, true));
             cm.setAcceptThirdPartyCookies(t.webView,
                     IcePrefs.getBool(activity, IcePrefs.KEY_COOKIES_ENABLED, true));
         } catch (Exception e) {

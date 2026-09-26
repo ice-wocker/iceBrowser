@@ -76,7 +76,7 @@ public class TabsActivity extends Activity {
                 @Override public void onClick(View v) {
                     new AlertDialog.Builder(TabsActivity.this)
                         .setTitle("关闭所有标签?")
-                        .setMessage("将关闭除当前外的所有标签页")
+                        .setMessage("将关闭全部标签页，并新开一个主页")
                         .setPositiveButton("确定", new android.content.DialogInterface.OnClickListener() {
                             @Override public void onClick(android.content.DialogInterface d, int w) {
                                 tabManager.closeAll();

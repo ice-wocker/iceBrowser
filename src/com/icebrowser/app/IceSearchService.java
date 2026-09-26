@@ -54,6 +54,18 @@ public class IceSearchService {
     public interface SuggestionCallback {
         void onSuggestions(java.util.List<String> suggestions);
     }
+
+    /**
+     * 释放线程池。每次主题切换 / 重建 Activity 都会 new 一个 IceSearchService，
+     * 不关闭的话每次会泄漏 3 个常驻线程。
+     */
+    public void shutdown() {
+        try {
+            executor.shutdownNow();
+        } catch (Exception e) {
+            Log.w(TAG, "shutdown", e);
+        }
+    }
     
     /**
      * 真异步搜索. 立即返回, 结果通过 callback 推送

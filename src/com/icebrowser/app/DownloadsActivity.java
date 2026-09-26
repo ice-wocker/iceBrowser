@@ -39,6 +39,17 @@ public class DownloadsActivity extends Activity {
     private final List<DatabaseHelper.DownloadItem> items = new ArrayList<>();
     private DownloadsAdapter adapter;
 
+    /** 前台轮询：让停留在本页的下载进度能自己走，而不是必须退出再进来。 */
+    private final android.os.Handler ticker =
+            new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable tick = new Runnable() {
+        @Override public void run() {
+            DownloadService.refreshAll(DownloadsActivity.this);
+            loadDownloads();
+            ticker.postDelayed(this, 1500);
+        }
+    };
+
     private static final SimpleDateFormat TIME_FMT =
             new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
 
@@ -120,6 +131,15 @@ public class DownloadsActivity extends Activity {
         // 回查系统下载状态，保证列表里的进度是真实的
         DownloadService.refreshAll(this);
         loadDownloads();
+        // 并保持轮询，直到离开本页
+        ticker.removeCallbacks(tick);
+        ticker.postDelayed(tick, 1500);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ticker.removeCallbacks(tick);
     }
 
     private void loadDownloads() {
