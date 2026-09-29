@@ -61,13 +61,21 @@
 - 文本选择 → 搜索/分享
 - 全屏视频
 
+## 📥 下载
+
+**[最新 Release](https://github.com/ice-wocker/iceBrowser/releases/latest)** —— 直接下载 `icebrowser.apk`（164 KB，签名验证通过）
+
+```bash
+wget https://github.com/ice-wocker/iceBrowser/releases/latest/download/icebrowser.apk
+```
+
 ## 技术栈
 
 | 项目 | 详情 |
 |------|------|
 | 语言 | 纯 Java (无 Kotlin) |
 | 平台 | Android 7.0+ (API 24+) |
-| 构建 | Termux + aapt + dx + apksigner |
+| 构建 | JDK 17 + Android SDK (aapt2 / d8 / zipalign / apksigner) |
 | 存储 | SQLite (历史/书签/下载) |
 | 首选项 | SharedPreferences |
 | 网络 | java.net.HttpURLConnection |
@@ -103,22 +111,23 @@ icebrowser/
 ├── assets/
 │   └── home.html               # 自研主页 (41KB)
 ├── AndroidManifest.xml
-├── build.sh                    # Termux 一键构建
+├── build.sh                    # 一键构建（任意 Linux + Android SDK）
 └── publish.sh                  # 一键发布到 GitHub
 ```
 
 ## 编译
 
 ```bash
-cd icebrowser
-bash build.sh
-# 产物: icebrowser.apk (~164 KB)
+ANDROID_HOME=/path/to/android-sdk ./build.sh
+# 产物: icebrowser.apk (164 KB)
 ```
 
 需要环境：
-- Termux (Android)
-- `android-tools` 包
-- `apkbuild` 工具链
+- **JDK 17**
+- **Android SDK**（build-tools + platforms 任一版本，脚本自动挑选）
+
+构建工具全部取自 `ANDROID_HOME`，不再依赖 Termux 的 `android-tools` 与
+`apkbuild` 工具链 —— 任何 Linux / macOS / CI 环境都能直接构建。
 
 ## 安装
 
