@@ -22,3 +22,7 @@ keystore.jks
 
 # OS
 Thumbs.db
+# 单元测试相关产物
+test-libs/
+.test-libs/
+build/
