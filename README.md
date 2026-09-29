@@ -2,13 +2,13 @@
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
   <img src="https://img.shields.io/badge/Android-24%2B-green" alt="Android 24+">
   <img src="https://img.shields.io/badge/Java-8-orange" alt="Java 8">
-  <img src="https://img.shields.io/badge/size-81KB-brightgreen" alt="81KB">
+  <img src="https://img.shields.io/badge/size-164KB-brightgreen" alt="164KB">
   <img src="https://img.shields.io/badge/dependencies-0-success" alt="0 deps">
   <img src="https://img.shields.io/github/stars/ice-wocker/iceBrowser?style=social" alt="Stars">
 </p>
 
 
-**v4.0 - 真正的浏览器 · 自研搜索引擎 · 单 dex 110KB · 零依赖**
+**v5.0 - 真正的浏览器 · 自研搜索引擎 · 单 dex · 零第三方依赖**
 
 一款极简但功能强大的 Android 浏览器。纯 Java 编写，单 dex APK，**无任何第三方库依赖**。
 
@@ -73,7 +73,7 @@
 | 网络 | java.net.HttpURLConnection |
 | 渲染 | WebView (Chrome 内核) |
 | 依赖 | **0** 第三方库 |
-| APK | 110KB |
+| APK | 164 KB（实测，JDK 17 + build-tools 35 构建） |
 
 ## 项目结构
 
@@ -112,7 +112,7 @@ icebrowser/
 ```bash
 cd icebrowser
 bash build.sh
-# 产物: icebrowser.apk (~110KB)
+# 产物: icebrowser.apk (~164 KB)
 ```
 
 需要环境：
