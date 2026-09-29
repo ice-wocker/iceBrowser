@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # 这些项目是手工构建（aapt2/d8/javac），没有包管理器依赖，
+  # 唯一会过期的是 CI 里引用的 GitHub Actions 版本
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "ci"
+    labels:
+      - dependencies
