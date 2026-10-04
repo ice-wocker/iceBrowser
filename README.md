@@ -7,8 +7,12 @@
   <img src="https://img.shields.io/github/stars/ice-wocker/iceBrowser?style=social" alt="Stars">
 </p>
 
+[![CI](https://github.com/ice-wocker/iceBrowser/actions/workflows/android.yml/badge.svg)](https://github.com/ice-wocker/iceBrowser/actions) [![Release](https://img.shields.io/github/v/release/ice-wocker/iceBrowser)](https://github.com/ice-wocker/iceBrowser/releases)
 
-**v5.0 - 真正的浏览器 · 自研搜索引擎 · 单 dex · 零第三方依赖**
+
+**v5.0.1 - 真正的浏览器 · 自研搜索引擎 · 单 dex · 零第三方依赖**
+
+> **English:** A minimal yet powerful Android browser in pure Java — single-dex APK with zero third-party dependencies, true multi-tab, built-in search and ad blocker.
 
 一款极简但功能强大的 Android 浏览器。纯 Java 编写，单 dex APK，**无任何第三方库依赖**。
 
@@ -145,7 +149,7 @@ pm install -r /data/local/tmp/icebrowser.apk
 
 ## 版本
 
-- **v4.0** (current) - 真正的多 Tab + 自研 ice 搜索 + URL 拦截
+- **v5.0.1** (current) - 真正的多 Tab + 自研 ice 搜索 + URL 拦截
 - v3.0 - 自研搜索引擎 (套壳 Bing)
 - v2.0 - 修复闪退 + assets 本地主页
 - v1.0 - 初次发布
@@ -162,3 +166,6 @@ MIT License
 
 - 启发自 [DuckDuckGo](https://duckduckgo.com/) 的极简设计
 - 启发自 [Iceweasel](https://www.mozilla.org/) 的设计哲学
+
+## Star History
+[![Star History Chart](https://api.star-history.com/svg?repos=ice-wocker/iceBrowser&type=Date)](https://star-history.com/#ice-wocker/iceBrowser&Date)
